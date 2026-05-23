@@ -1,0 +1,26 @@
+{
+  "framework": "nextjs",
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains; preload"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/login",
+      "destination": "/signin",
+      "permanent": true
+    },
+    {
+      "source": "/register",
+      "destination": "/signup",
+      "permanent": true
+    }
+  ]
+}
