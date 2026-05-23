@@ -48,7 +48,7 @@ export function CommandPaletteProvider({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
-  const { theme, toggleTheme } = useTheme();
+  const { resolvedTheme, toggleTheme } = useTheme();
   const { user, signOut } = useAuth();
 
   const open = useCallback(() => setIsOpen(true), []);
@@ -209,13 +209,13 @@ export function CommandPaletteProvider({
                   >
                     <Item
                       icon={
-                        theme === "dark" ? (
+                        resolvedTheme === "dark" ? (
                           <Sun className="h-4 w-4" />
                         ) : (
                           <Moon className="h-4 w-4" />
                         )
                       }
-                      label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+                      label={`Switch to ${resolvedTheme === "dark" ? "light" : "dark"} mode`}
                       onSelect={() => {
                         toggleTheme();
                       }}

@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
+import { THEME_INIT_SCRIPT, ThemeProvider } from "@/components/theme-provider";
 import { CommandPaletteProvider } from "@/components/command/command-palette";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { Navbar } from "@/components/layout/navbar";
@@ -102,6 +102,13 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        {/* Inline script rendered as the first child of <body>. Browsers
+            parse and execute inline scripts synchronously before continuing,
+            so this sets the theme class before any other body content is
+            painted, avoiding a flash of light theme for dark-mode users. */}
+        <script
+          dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }}
+        />
         <ThemeProvider>
           <AuthProvider>
             <CommandPaletteProvider>
