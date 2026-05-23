@@ -92,7 +92,7 @@ function SignInForm() {
           <div className="flex items-center justify-between">
             <Label htmlFor="password">Password</Label>
             <Link
-              href="/signin"
+              href="/signin?reset=1"
               className="text-xs text-muted-foreground hover:text-foreground"
             >
               Forgot password?
