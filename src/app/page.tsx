@@ -13,6 +13,7 @@ import {
   Shield,
   Sparkles,
   Star,
+  Terminal,
   Workflow,
   Zap,
 } from "lucide-react";
@@ -24,6 +25,7 @@ import { Reveal, StaggerGroup, StaggerItem } from "@/components/motion/reveal";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { IntegrationIcon } from "@/components/visuals/integration-icons";
+import { CodeBlock } from "@/components/docs/code-block";
 
 const TRUSTED = [
   "Linear",
@@ -186,16 +188,17 @@ export default function HomePage() {
   return (
     <>
       {/* HERO */}
-      <Section className="relative overflow-hidden pt-16 pb-24 sm:pt-20">
+      <Section className="relative overflow-hidden pt-14 pb-24 sm:pt-20">
         <div className="absolute inset-0 -z-10 bg-grid bg-grid-fade animate-grid" />
         <div
           className="orb -z-10"
           style={{
             background: "rgb(var(--gradient-from))",
-            width: 360,
-            height: 360,
-            left: "10%",
-            top: "10%",
+            width: 380,
+            height: 380,
+            left: "-6%",
+            top: "8%",
+            opacity: 0.35,
           }}
         />
         <div
@@ -204,80 +207,218 @@ export default function HomePage() {
             background: "rgb(var(--gradient-to))",
             width: 320,
             height: 320,
-            right: "10%",
-            top: "5%",
+            right: "-4%",
+            top: "12%",
+            opacity: 0.3,
           }}
         />
 
         <FloatingNodes />
 
         <Container className="relative">
-          <div className="flex flex-col items-center text-center gap-6">
-            <Reveal>
-              <a
-                href="/product"
-                className="group inline-flex items-center gap-2 rounded-full border border-border bg-background/60 backdrop-blur px-3 py-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
-              >
-                <Sparkles className="h-3 w-3 text-foreground" />
-                Introducing Hypero 1.0
-                <span className="text-foreground/60">·</span>
-                <span className="inline-flex items-center gap-1">
-                  Read the announcement
+          <div className="grid items-start gap-14 lg:grid-cols-12 lg:gap-12">
+            {/* Left column: copy + CTAs + install */}
+            <div className="lg:col-span-7 flex flex-col gap-6">
+              <Reveal>
+                <a
+                  href="/terminal"
+                  className="group inline-flex items-center gap-2 rounded-full border border-border bg-background/70 backdrop-blur px-3 py-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <span className="relative inline-flex h-1.5 w-1.5">
+                    <span className="absolute inset-0 rounded-full bg-emerald-500/40 animate-ping" />
+                    <span className="relative h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                  </span>
+                  <span className="font-mono">v1.0</span>
+                  <span className="text-foreground/40">·</span>
+                  <span>Studio + CLI are live</span>
                   <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
-                </span>
-              </a>
-            </Reveal>
+                </a>
+              </Reveal>
 
-            <Reveal delay={0.1}>
-              <h1 className="max-w-4xl text-5xl sm:text-6xl md:text-7xl font-semibold tracking-tight leading-[1.05]">
-                Build AI workflows
-                <br />
-                <span className="text-gradient">visually.</span>
-              </h1>
-            </Reveal>
+              <Reveal delay={0.08}>
+                <h1 className="text-[2.75rem] sm:text-6xl md:text-[4.25rem] font-semibold tracking-[-0.025em] leading-[1.02]">
+                  <span className="block">Build AI workflows</span>
+                  <span className="block">
+                    <span className="text-foreground/45 font-normal">with </span>
+                    <span className="font-serif italic font-normal text-gradient">
+                      production
+                    </span>
+                    <span className="text-foreground"> code.</span>
+                  </span>
+                </h1>
+              </Reveal>
 
-            <Reveal delay={0.2}>
-              <p className="max-w-2xl text-base sm:text-lg text-muted-foreground leading-relaxed">
-                Hypero is the visual builder for AI agents, automations, and
-                internal tools. Drag, drop, and ship intelligent workflows in
-                minutes — not months.
-              </p>
-            </Reveal>
+              <Reveal delay={0.16}>
+                <p className="max-w-xl text-base sm:text-lg text-muted-foreground leading-relaxed">
+                  A visual canvas, an AI agent runtime, and a CLI — built for
+                  engineers who&apos;d rather ship the workflow than wire the
+                  glue around it.
+                </p>
+              </Reveal>
 
-            <Reveal delay={0.3}>
-              <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
-                <Button href="/signup" size="lg">
-                  Start building free
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-                <Button href="/studio" size="lg" variant="outline">
-                  <Sparkles className="h-4 w-4" />
-                  Open the studio
-                </Button>
-              </div>
-            </Reveal>
+              <Reveal delay={0.22}>
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-1">
+                  <Button href="/studio" size="lg">
+                    <Sparkles className="h-4 w-4" />
+                    Open studio
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                  <Button href="/signup" size="lg" variant="outline">
+                    Get started
+                  </Button>
+                </div>
+              </Reveal>
 
-            <Reveal delay={0.4}>
-              <p className="text-xs text-muted-foreground pt-2">
-                Free forever for personal use · No credit card required
-              </p>
-            </Reveal>
-          </div>
+              <Reveal delay={0.3}>
+                <ul className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-muted-foreground pt-1">
+                  <li className="inline-flex items-center gap-1.5">
+                    <CheckCircle2 className="h-3 w-3 text-emerald-500" />
+                    Free for personal use
+                  </li>
+                  <li className="inline-flex items-center gap-1.5">
+                    <CheckCircle2 className="h-3 w-3 text-emerald-500" />
+                    No credit card
+                  </li>
+                  <li className="inline-flex items-center gap-1.5">
+                    <CheckCircle2 className="h-3 w-3 text-emerald-500" />
+                    Visual + code, same project
+                  </li>
+                </ul>
+              </Reveal>
 
-          <Reveal delay={0.45} className="mt-16 sm:mt-20">
-            <div className="relative mx-auto max-w-5xl">
-              <div
-                className="absolute -inset-4 -z-10 rounded-3xl opacity-40"
-                style={{
-                  background:
-                    "linear-gradient(135deg, rgb(var(--gradient-from) / 0.18), rgb(var(--gradient-to) / 0.18))",
-                  filter: "blur(40px)",
-                }}
-                aria-hidden
-              />
-              <WorkflowPreview />
+              <Reveal delay={0.38} className="pt-2">
+                <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-muted-foreground">
+                  <Terminal className="h-3 w-3" />
+                  Or install the CLI
+                </div>
+                <div className="mt-2 max-w-xl">
+                  <CodeBlock language="bash" title="~/projects">
+{`# Install the CLI, sign in, scaffold a workflow from a prompt
+$ npm install -g @hypero/cli && hyp login
+$ hyp new lead-router --from "score leads and notify slack"
+✓ 6 nodes · 5 edges · ready in ./lead-router`}
+                  </CodeBlock>
+                </div>
+              </Reveal>
             </div>
-          </Reveal>
+
+            {/* Right column: stacked preview + mini run log */}
+            <div className="lg:col-span-5 flex flex-col gap-4">
+              <Reveal delay={0.18}>
+                <div className="relative">
+                  <div
+                    className="absolute -inset-3 -z-10 rounded-3xl opacity-40"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, rgb(var(--gradient-from) / 0.18), rgb(var(--gradient-to) / 0.18))",
+                      filter: "blur(40px)",
+                    }}
+                    aria-hidden
+                  />
+                  <WorkflowPreview />
+                </div>
+              </Reveal>
+
+              <Reveal delay={0.32}>
+                <div className="overflow-hidden rounded-xl border border-border bg-card/70 backdrop-blur">
+                  <div className="flex items-center justify-between border-b border-border bg-muted/40 px-3 py-1.5 text-[11px] font-mono text-muted-foreground">
+                    <span className="inline-flex items-center gap-2">
+                      <span className="flex gap-1">
+                        <span className="h-1.5 w-1.5 rounded-full bg-red-400/70" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-yellow-400/70" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400/70" />
+                      </span>
+                      hyp run lead-router
+                    </span>
+                    <span className="inline-flex items-center gap-1.5">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      live
+                    </span>
+                  </div>
+                  <pre className="overflow-x-auto px-3 py-3 text-[12px] leading-relaxed font-mono">
+                    <code>
+                      <span className="text-emerald-600 dark:text-emerald-400">
+                        →
+                      </span>{" "}
+                      <span className="text-foreground">trigger:webhook</span>
+                      <span className="text-foreground/40">
+                        {"  ".padEnd(8)}
+                      </span>
+                      <span className="text-emerald-600 dark:text-emerald-400">
+                        ok
+                      </span>{" "}
+                      <span className="text-orange-600 dark:text-orange-400">
+                        12ms
+                      </span>
+                      {"\n"}
+                      <span className="text-emerald-600 dark:text-emerald-400">
+                        →
+                      </span>{" "}
+                      <span className="text-foreground">http:enrich</span>
+                      <span className="text-foreground/40">{"     "}</span>
+                      <span className="text-emerald-600 dark:text-emerald-400">
+                        ok
+                      </span>{" "}
+                      <span className="text-orange-600 dark:text-orange-400">
+                        142ms
+                      </span>
+                      {"\n"}
+                      <span className="text-emerald-600 dark:text-emerald-400">
+                        →
+                      </span>{" "}
+                      <span className="text-foreground">llm:score</span>
+                      <span className="text-foreground/40">{"       "}</span>
+                      <span className="text-emerald-600 dark:text-emerald-400">
+                        ok
+                      </span>{" "}
+                      <span className="text-orange-600 dark:text-orange-400">
+                        612ms
+                      </span>{" "}
+                      <span className="text-foreground/40">{"{ "}</span>
+                      <span className="text-pink-600 dark:text-pink-400">
+                        score
+                      </span>
+                      <span className="text-foreground/40">: </span>
+                      <span className="text-orange-600 dark:text-orange-400">
+                        86
+                      </span>
+                      <span className="text-foreground/40">{" }"}</span>
+                      {"\n"}
+                      <span className="text-emerald-600 dark:text-emerald-400">
+                        →
+                      </span>{" "}
+                      <span className="text-foreground">if score≥80</span>
+                      <span className="text-foreground/40">{"      "}</span>
+                      <span className="text-blue-600 dark:text-blue-400">
+                        true
+                      </span>
+                      {"\n"}
+                      <span className="text-emerald-600 dark:text-emerald-400">
+                        →
+                      </span>{" "}
+                      <span className="text-foreground">slack:notify</span>
+                      <span className="text-foreground/40">{"    "}</span>
+                      <span className="text-emerald-600 dark:text-emerald-400">
+                        ok
+                      </span>{" "}
+                      <span className="text-orange-600 dark:text-orange-400">
+                        98ms
+                      </span>
+                      {"\n"}
+                      <span className="text-violet-600 dark:text-violet-400">
+                        ✓
+                      </span>{" "}
+                      <span className="text-foreground">workflow ok</span>{" "}
+                      <span className="text-foreground/40">·</span>{" "}
+                      <span className="text-orange-600 dark:text-orange-400">
+                        865ms
+                      </span>
+                    </code>
+                  </pre>
+                </div>
+              </Reveal>
+            </div>
+          </div>
         </Container>
       </Section>
 
