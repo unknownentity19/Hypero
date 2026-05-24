@@ -1,5 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Roboto, Roboto_Mono } from "next/font/google";
+import {
+  Instrument_Serif,
+  JetBrains_Mono,
+  Space_Grotesk,
+} from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { CommandPaletteProvider } from "@/components/command/command-palette";
@@ -9,16 +13,23 @@ import { Footer } from "@/components/layout/footer";
 import { PageTransition } from "@/components/motion/page-transition";
 import { SITE } from "@/lib/site";
 
-const robotoSans = Roboto({
-  variable: "--font-roboto-sans",
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "700", "900"],
   display: "swap",
 });
 
-const robotoMono = Roboto_Mono({
-  variable: "--font-roboto-mono",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-instrument-serif",
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
   display: "swap",
 });
 
@@ -100,7 +111,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${robotoSans.variable} ${robotoMono.variable} h-full antialiased`}
+      className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} ${instrumentSerif.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <ThemeProvider>
