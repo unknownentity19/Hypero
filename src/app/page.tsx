@@ -13,19 +13,17 @@ import {
   Shield,
   Sparkles,
   Star,
-  Terminal,
   Workflow,
   Zap,
 } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Container, Section, SectionHeader } from "@/components/ui/section";
 import { WorkflowPreview } from "@/components/visuals/workflow-preview";
-import { FloatingNodes } from "@/components/visuals/floating-nodes";
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/motion/reveal";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { IntegrationIcon } from "@/components/visuals/integration-icons";
-import { CodeBlock } from "@/components/docs/code-block";
 
 const TRUSTED = [
   "Linear",
@@ -188,68 +186,75 @@ export default function HomePage() {
   return (
     <>
       {/* HERO */}
-      <Section className="relative overflow-hidden pt-14 pb-24 sm:pt-20">
-        <div className="absolute inset-0 -z-10 bg-grid bg-grid-fade animate-grid" />
+      <Section className="relative overflow-hidden pt-20 pb-24 sm:pt-28 sm:pb-32">
+        {/* Background grid with radial fade */}
+        <div className="absolute inset-0 -z-10 bg-grid bg-grid-fade" />
+
+        {/* Soft corner orbs */}
         <div
+          aria-hidden
           className="orb -z-10"
           style={{
             background: "rgb(var(--gradient-from))",
-            width: 380,
-            height: 380,
-            left: "-6%",
-            top: "8%",
-            opacity: 0.35,
+            width: 520,
+            height: 520,
+            left: "-12%",
+            top: "-12%",
+            opacity: 0.18,
           }}
         />
         <div
+          aria-hidden
           className="orb -z-10"
           style={{
             background: "rgb(var(--gradient-to))",
-            width: 320,
-            height: 320,
-            right: "-4%",
-            top: "12%",
-            opacity: 0.3,
+            width: 460,
+            height: 460,
+            right: "-12%",
+            top: "8%",
+            opacity: 0.16,
           }}
         />
 
-        <FloatingNodes />
+        {/* Centered glow behind headline */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute left-1/2 top-[8%] -z-10 h-[480px] w-[1100px] -translate-x-1/2"
+          style={{
+            background:
+              "radial-gradient(ellipse at center, rgb(var(--gradient-via) / 0.14), transparent 60%)",
+          }}
+        />
 
         <Container className="relative">
-          <div className="grid items-start gap-14 lg:grid-cols-12 lg:gap-12">
-            {/* Left column: copy + CTAs + install */}
-            <div className="lg:col-span-7 flex flex-col gap-6">
+          <div className="grid items-center gap-14 lg:grid-cols-12 lg:gap-12">
+            {/* Left: copy + CTAs */}
+            <div className="lg:col-span-7 flex flex-col gap-7">
               <Reveal>
-                <a
+                <Link
                   href="/terminal"
-                  className="group inline-flex items-center gap-2 rounded-full border border-border bg-background/70 backdrop-blur px-3 py-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+                  className="group inline-flex w-fit items-center gap-2 rounded-full border border-border bg-background/70 px-3 py-1 text-xs text-muted-foreground backdrop-blur transition-colors hover:text-foreground hover:border-border-strong"
                 >
                   <span className="relative inline-flex h-1.5 w-1.5">
                     <span className="absolute inset-0 rounded-full bg-emerald-500/40 animate-ping" />
                     <span className="relative h-1.5 w-1.5 rounded-full bg-emerald-500" />
                   </span>
-                  <span className="font-mono">v1.0</span>
-                  <span className="text-foreground/40">·</span>
+                  <span className="font-mono text-foreground">v1.0</span>
+                  <span className="text-foreground/30">/</span>
                   <span>Studio + CLI are live</span>
                   <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
-                </a>
+                </Link>
               </Reveal>
 
               <Reveal delay={0.08}>
-                <h1 className="text-[2.75rem] sm:text-6xl md:text-[4.25rem] font-semibold tracking-[-0.025em] leading-[1.02]">
-                  <span className="block">Build AI workflows</span>
-                  <span className="block">
-                    <span className="text-foreground/45 font-normal">with </span>
-                    <span className="font-serif italic font-normal text-gradient">
-                      production
-                    </span>
-                    <span className="text-foreground"> code.</span>
-                  </span>
+                <h1 className="text-balance text-5xl sm:text-6xl md:text-[4.25rem] font-semibold tracking-[-0.025em] leading-[1.02]">
+                  Build AI workflows{" "}
+                  <span className="text-gradient">in production.</span>
                 </h1>
               </Reveal>
 
               <Reveal delay={0.16}>
-                <p className="max-w-xl text-base sm:text-lg text-muted-foreground leading-relaxed">
+                <p className="max-w-xl text-balance text-base sm:text-lg text-muted-foreground leading-relaxed">
                   A visual canvas, an AI agent runtime, and a CLI — built for
                   engineers who&apos;d rather ship the workflow than wire the
                   glue around it.
@@ -257,27 +262,27 @@ export default function HomePage() {
               </Reveal>
 
               <Reveal delay={0.22}>
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-1">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                   <Button href="/studio" size="lg">
                     <Sparkles className="h-4 w-4" />
                     Open studio
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                   <Button href="/signup" size="lg" variant="outline">
-                    Get started
+                    Get started free
                   </Button>
                 </div>
               </Reveal>
 
               <Reveal delay={0.3}>
-                <ul className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-muted-foreground pt-1">
+                <ul className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
                   <li className="inline-flex items-center gap-1.5">
                     <CheckCircle2 className="h-3 w-3 text-emerald-500" />
                     Free for personal use
                   </li>
                   <li className="inline-flex items-center gap-1.5">
                     <CheckCircle2 className="h-3 w-3 text-emerald-500" />
-                    No credit card
+                    No credit card required
                   </li>
                   <li className="inline-flex items-center gap-1.5">
                     <CheckCircle2 className="h-3 w-3 text-emerald-500" />
@@ -285,136 +290,44 @@ export default function HomePage() {
                   </li>
                 </ul>
               </Reveal>
-
-              <Reveal delay={0.38} className="pt-2">
-                <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-muted-foreground">
-                  <Terminal className="h-3 w-3" />
-                  Or install the CLI
-                </div>
-                <div className="mt-2 max-w-xl">
-                  <CodeBlock language="bash" title="~/projects">
-{`# Install the CLI, sign in, scaffold a workflow from a prompt
-$ npm install -g @hypero/cli && hyp login
-$ hyp new lead-router --from "score leads and notify slack"
-✓ 6 nodes · 5 edges · ready in ./lead-router`}
-                  </CodeBlock>
-                </div>
-              </Reveal>
             </div>
 
-            {/* Right column: stacked preview + mini run log */}
-            <div className="lg:col-span-5 flex flex-col gap-4">
+            {/* Right: workflow preview only */}
+            <div className="lg:col-span-5">
               <Reveal delay={0.18}>
                 <div className="relative">
+                  {/* Soft gradient halo */}
                   <div
-                    className="absolute -inset-3 -z-10 rounded-3xl opacity-40"
+                    aria-hidden
+                    className="absolute -inset-6 -z-10 rounded-3xl opacity-70"
                     style={{
                       background:
-                        "linear-gradient(135deg, rgb(var(--gradient-from) / 0.18), rgb(var(--gradient-to) / 0.18))",
-                      filter: "blur(40px)",
+                        "linear-gradient(135deg, rgb(var(--gradient-from) / 0.22), rgb(var(--gradient-via) / 0.16) 50%, rgb(var(--gradient-to) / 0.22))",
+                      filter: "blur(48px)",
                     }}
-                    aria-hidden
                   />
-                  <WorkflowPreview />
-                </div>
-              </Reveal>
 
-              <Reveal delay={0.32}>
-                <div className="overflow-hidden rounded-xl border border-border bg-card/70 backdrop-blur">
-                  <div className="flex items-center justify-between border-b border-border bg-muted/40 px-3 py-1.5 text-[11px] font-mono text-muted-foreground">
-                    <span className="inline-flex items-center gap-2">
-                      <span className="flex gap-1">
-                        <span className="h-1.5 w-1.5 rounded-full bg-red-400/70" />
-                        <span className="h-1.5 w-1.5 rounded-full bg-yellow-400/70" />
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400/70" />
-                      </span>
-                      hyp run lead-router
-                    </span>
-                    <span className="inline-flex items-center gap-1.5">
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                      live
-                    </span>
+                  {/* Gradient border frame */}
+                  <div
+                    className="relative rounded-[1.15rem] p-px"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, rgb(var(--gradient-from) / 0.45), rgb(var(--gradient-via) / 0.3) 50%, rgb(var(--gradient-to) / 0.45))",
+                    }}
+                  >
+                    <WorkflowPreview />
                   </div>
-                  <pre className="overflow-x-auto px-3 py-3 text-[12px] leading-relaxed font-mono">
-                    <code>
-                      <span className="text-emerald-600 dark:text-emerald-400">
-                        →
-                      </span>{" "}
-                      <span className="text-foreground">trigger:webhook</span>
-                      <span className="text-foreground/40">
-                        {"  ".padEnd(8)}
-                      </span>
-                      <span className="text-emerald-600 dark:text-emerald-400">
-                        ok
-                      </span>{" "}
-                      <span className="text-orange-600 dark:text-orange-400">
-                        12ms
-                      </span>
-                      {"\n"}
-                      <span className="text-emerald-600 dark:text-emerald-400">
-                        →
-                      </span>{" "}
-                      <span className="text-foreground">http:enrich</span>
-                      <span className="text-foreground/40">{"     "}</span>
-                      <span className="text-emerald-600 dark:text-emerald-400">
-                        ok
-                      </span>{" "}
-                      <span className="text-orange-600 dark:text-orange-400">
-                        142ms
-                      </span>
-                      {"\n"}
-                      <span className="text-emerald-600 dark:text-emerald-400">
-                        →
-                      </span>{" "}
-                      <span className="text-foreground">llm:score</span>
-                      <span className="text-foreground/40">{"       "}</span>
-                      <span className="text-emerald-600 dark:text-emerald-400">
-                        ok
-                      </span>{" "}
-                      <span className="text-orange-600 dark:text-orange-400">
-                        612ms
-                      </span>{" "}
-                      <span className="text-foreground/40">{"{ "}</span>
-                      <span className="text-pink-600 dark:text-pink-400">
-                        score
-                      </span>
-                      <span className="text-foreground/40">: </span>
-                      <span className="text-orange-600 dark:text-orange-400">
-                        86
-                      </span>
-                      <span className="text-foreground/40">{" }"}</span>
-                      {"\n"}
-                      <span className="text-emerald-600 dark:text-emerald-400">
-                        →
-                      </span>{" "}
-                      <span className="text-foreground">if score≥80</span>
-                      <span className="text-foreground/40">{"      "}</span>
-                      <span className="text-blue-600 dark:text-blue-400">
-                        true
-                      </span>
-                      {"\n"}
-                      <span className="text-emerald-600 dark:text-emerald-400">
-                        →
-                      </span>{" "}
-                      <span className="text-foreground">slack:notify</span>
-                      <span className="text-foreground/40">{"    "}</span>
-                      <span className="text-emerald-600 dark:text-emerald-400">
-                        ok
-                      </span>{" "}
-                      <span className="text-orange-600 dark:text-orange-400">
-                        98ms
-                      </span>
-                      {"\n"}
-                      <span className="text-violet-600 dark:text-violet-400">
-                        ✓
-                      </span>{" "}
-                      <span className="text-foreground">workflow ok</span>{" "}
-                      <span className="text-foreground/40">·</span>{" "}
-                      <span className="text-orange-600 dark:text-orange-400">
-                        865ms
-                      </span>
-                    </code>
-                  </pre>
+
+                  {/* Floating live-run pill */}
+                  <div className="pointer-events-none absolute -left-3 -bottom-3 hidden md:flex items-center gap-2 rounded-full border border-border bg-background/95 px-3 py-1.5 text-xs shadow-md backdrop-blur">
+                    <span className="relative inline-flex h-2 w-2">
+                      <span className="absolute inset-0 rounded-full bg-emerald-500/40 animate-ping" />
+                      <span className="relative h-2 w-2 rounded-full bg-emerald-500" />
+                    </span>
+                    <span className="font-mono text-foreground">lead-router</span>
+                    <span className="text-muted-foreground">·</span>
+                    <span className="text-muted-foreground">865ms</span>
+                  </div>
                 </div>
               </Reveal>
             </div>
