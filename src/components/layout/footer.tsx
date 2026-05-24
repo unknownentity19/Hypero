@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Logo } from "@/components/brand/logo";
 
 const COLUMNS = [
@@ -41,6 +44,9 @@ const COLUMNS = [
 ];
 
 export function Footer() {
+  const pathname = usePathname();
+  // The studio fills the viewport — hide the marketing footer there.
+  if (pathname?.startsWith("/studio")) return null;
   return (
     <footer className="mt-32 border-t border-border bg-background">
       <div className="mx-auto max-w-6xl px-6 py-16">
