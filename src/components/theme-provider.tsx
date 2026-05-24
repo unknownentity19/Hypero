@@ -24,19 +24,17 @@ const STORAGE_KEY = "hypero-theme";
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("light");
 
-  // Hydrate from localStorage / system preference on the client
+  // Hydrate from localStorage. The default is light — visitors only get
+  // dark mode if they've explicitly opted in via the toggle.
   useEffect(() => {
     const stored =
       typeof window !== "undefined"
         ? (window.localStorage.getItem(STORAGE_KEY) as Theme | null)
         : null;
 
-    const systemPrefersDark =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-    const initial: Theme = stored ?? (systemPrefersDark ? "dark" : "light");
-    setThemeState(initial);
+    if (stored === "dark" || stored === "light") {
+      setThemeState(stored);
+    }
   }, []);
 
   // Sync html class
