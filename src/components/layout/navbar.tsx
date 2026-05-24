@@ -9,6 +9,7 @@ import {
   LogOut,
   Menu,
   Moon,
+  Sparkles,
   Sun,
   X,
 } from "lucide-react";
@@ -195,6 +196,13 @@ export function Navbar() {
                       >
                         <LayoutDashboard className="h-4 w-4" />
                         Dashboard
+                      </Link>
+                      <Link
+                        href="/studio"
+                        className="flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-accent"
+                      >
+                        <Sparkles className="h-4 w-4" />
+                        Open studio
                       </Link>
                       <Link
                         href="/docs"

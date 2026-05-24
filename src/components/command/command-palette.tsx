@@ -155,9 +155,14 @@ export function CommandPaletteProvider({
                     className="px-2 pb-2 pt-3 text-[11px] uppercase tracking-wide text-muted-foreground"
                   >
                     <Item
+                      icon={<Sparkles className="h-4 w-4" />}
+                      label="Open studio"
+                      onSelect={() => go("/studio")}
+                    />
+                    <Item
                       icon={<Workflow className="h-4 w-4" />}
-                      label="Visual workflow builder"
-                      onSelect={() => go("/features#workflow-builder")}
+                      label="New project"
+                      onSelect={() => go("/dashboard?new=1")}
                     />
                     <Item
                       icon={<Code2 className="h-4 w-4" />}

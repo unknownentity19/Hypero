@@ -250,8 +250,9 @@ export default function HomePage() {
                   Start building free
                   <ArrowRight className="h-4 w-4" />
                 </Button>
-                <Button href="/product" size="lg" variant="outline">
-                  See how it works
+                <Button href="/studio" size="lg" variant="outline">
+                  <Sparkles className="h-4 w-4" />
+                  Open the studio
                 </Button>
               </div>
             </Reveal>
