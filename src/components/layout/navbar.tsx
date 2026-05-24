@@ -69,14 +69,9 @@ const NAV_GROUPS: NavGroup[] = [
         desc: "Visual AI workflow builder.",
       },
       {
-        label: "New Project",
-        href: "/dashboard?new=1",
-        desc: "Start from a template or describe it.",
-      },
-      {
-        label: "Dashboard",
-        href: "/dashboard",
-        desc: "Your projects, runs, and activity.",
+        label: "Terminal",
+        href: "/terminal",
+        desc: "Use Hypero from your CLI.",
       },
     ],
   },
@@ -208,6 +203,31 @@ export function Navbar() {
 
           <nav className="hidden md:block" ref={navRef}>
             <ul className="flex items-center gap-1">
+              <li className="relative">
+                <Link
+                  href="/"
+                  onMouseEnter={() => setOpenGroup(null)}
+                  className={cn(
+                    "relative inline-flex h-8 items-center px-3 text-sm transition-colors",
+                    pathname === "/"
+                      ? "text-foreground"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  {pathname === "/" && openGroup === null ? (
+                    <motion.span
+                      layoutId="nav-active"
+                      className="absolute inset-0 rounded-full bg-accent"
+                      transition={{
+                        type: "spring",
+                        stiffness: 380,
+                        damping: 30,
+                      }}
+                    />
+                  ) : null}
+                  <span className="relative">Home</span>
+                </Link>
+              </li>
               {NAV_GROUPS.map((group) => {
                 const isOpen = openGroup === group.label;
                 const isActive = isGroupActive(group, pathname);
@@ -425,6 +445,17 @@ export function Navbar() {
           className="md:hidden border-t border-border bg-background"
         >
           <div className="mx-auto max-w-6xl px-6 py-4 flex flex-col gap-4">
+            <Link
+              href="/"
+              className={cn(
+                "rounded-lg px-3 py-2 text-sm transition-colors",
+                pathname === "/"
+                  ? "bg-accent text-foreground"
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground",
+              )}
+            >
+              Home
+            </Link>
             {NAV_GROUPS.map((group) => (
               <div key={group.label} className="flex flex-col gap-1">
                 <p className="px-3 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
