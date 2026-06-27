@@ -49,7 +49,14 @@ export function Button(props: ButtonProps) {
   const classes = cn(base, variants[variant], sizes[size], className);
 
   if ("href" in props && props.href !== undefined) {
-    const { href, ...rest } = props;
+    const {
+      href,
+      variant: _v,
+      size: _s,
+      className: _c,
+      children: _ch,
+      ...rest
+    } = props;
     const isExternal = /^https?:\/\//.test(href);
     if (isExternal) {
       return (

@@ -42,13 +42,12 @@ const FEATURES: Feature[] = [
     id: "workflow-builder",
     icon: <Workflow className="h-4 w-4" />,
     title: "Visual Workflow Builder",
-    tagline: "Design intelligence on a canvas anyone can read.",
+    tagline: "A canvas your whole team can make sense of.",
     description: (
       <>
-        Hypero&apos;s canvas turns the steps in your head into wired,
-        executable nodes. Drag triggers, agents, integrations, and logic onto a
-        single surface — collaborators see the same diagram you do, and every
-        step is editable in place.
+        Map out your workflow on a shared canvas. Each step becomes a node you
+        can configure, test, and re-run independently. Collaborators see the
+        same diagram in real time, and every step is editable in place.
       </>
     ),
     bullets: [
@@ -58,7 +57,7 @@ const FEATURES: Feature[] = [
       "Node-level permissions and approvals",
     ],
     useCase: {
-      title: "Lead routing in fifteen minutes",
+      title: "Replacing a Zap and a Python script",
       body: "A growth team replaces three Zaps and a Python script with one workflow that classifies inbound leads with an AI agent and writes them straight into HubSpot.",
     },
     mock: <MockBuilder />,
@@ -67,12 +66,12 @@ const FEATURES: Feature[] = [
     id: "agents",
     icon: <Bot className="h-4 w-4" />,
     title: "AI Agent Creation",
-    tagline: "Spin up agents that plan, decide, and call tools.",
+    tagline: "Configure an agent, give it tools, and let it run.",
     description: (
       <>
         Define a role, give an agent a set of tools, and drop it onto the
-        canvas. Hypero handles memory, tool selection, retries, and reasoning
-        so you can focus on the behavior — not the plumbing.
+        canvas. Hypero handles memory, tool selection, and retries so you can
+        focus on what the agent should actually do.
       </>
     ),
     bullets: [
@@ -82,7 +81,7 @@ const FEATURES: Feature[] = [
       "Hot-swap models from OpenAI, Anthropic, or your own",
     ],
     useCase: {
-      title: "Always-on support triage",
+      title: "Handling first-response support",
       body: "A SaaS support team replaces their first-response queue with an agent that classifies tickets, drafts replies, and escalates only when it isn't sure.",
     },
     mock: <MockAgent />,
@@ -91,7 +90,7 @@ const FEATURES: Feature[] = [
     id: "multi-step",
     icon: <Layers className="h-4 w-4" />,
     title: "Multi-step Automation Engine",
-    tagline: "Reliable execution with retries, branches, and rollbacks.",
+    tagline: "Runs that don't fall over when something goes wrong.",
     description: (
       <>
         Underneath the canvas is a durable workflow engine. Steps run with
@@ -106,7 +105,7 @@ const FEATURES: Feature[] = [
       "Pause, approve, and resume from anywhere",
     ],
     useCase: {
-      title: "Onboarding choreography",
+      title: "Running a multi-step onboarding flow",
       body: "An ops team kicks off a 14-step onboarding workflow on every new signup — provisioning, billing checks, and welcome emails — without writing a single cron job.",
     },
     mock: <MockSteps />,
@@ -115,7 +114,7 @@ const FEATURES: Feature[] = [
     id: "integrations",
     icon: <Plug className="h-4 w-4" />,
     title: "API & Integrations System",
-    tagline: "Connect to anything, expose anything.",
+    tagline: "Native connectors for what you use, HTTP for everything else.",
     description: (
       <>
         Hypero ships with native integrations for the tools your team already
@@ -130,7 +129,7 @@ const FEATURES: Feature[] = [
       "Auto-generated REST + SDK for each workflow",
     ],
     useCase: {
-      title: "Internal tools, instantly",
+      title: "Turning workflows into JSON APIs",
       body: "An internal platform team turns every workflow into a JSON API and embeds them as actions in Retool, Slack, and the company's docs.",
     },
     mock: <MockIntegrations />,
@@ -139,13 +138,12 @@ const FEATURES: Feature[] = [
     id: "reasoning",
     icon: <Brain className="h-4 w-4" />,
     title: "AI Reasoning Layer",
-    tagline: "See what the model thought, not just what it did.",
+    tagline: "Inspect what the agent actually did, step by step.",
     description: (
       <>
-        Every agent run streams a structured reasoning trace: the plan, the
-        tool calls, the intermediate decisions, and the final output. Replay
-        any trace, diff it against a previous run, and pin issues directly on
-        the canvas.
+        Every agent run produces a full trace — what it planned, which tools it
+        called, and why it made each decision. Compare two runs side-by-side
+        and replay any trace against historical inputs.
       </>
     ),
     bullets: [
@@ -164,12 +162,12 @@ const FEATURES: Feature[] = [
     id: "api",
     icon: <Plug className="h-4 w-4" />,
     title: "Production-grade API",
-    tagline: "Every workflow becomes an endpoint, automatically.",
+    tagline: "Each workflow you deploy gets its own API endpoint.",
     description: (
       <>
-        Ship Hypero workflows the same way you ship the rest of your backend.
-        Each workflow gets a typed REST endpoint, an SDK, and observability —
-        with rate limits and audit logs out of the box.
+        Deploy Hypero workflows the same way you deploy the rest of your
+        backend. Each workflow gets a typed REST endpoint, an SDK, and
+        observability — rate limits and audit logs included.
       </>
     ),
     bullets: [
@@ -179,7 +177,7 @@ const FEATURES: Feature[] = [
       "Bring-your-own-cloud option",
     ],
     useCase: {
-      title: "Replace a Lambda, not your stack",
+      title: "Replacing a fragile Lambda setup",
       body: "A platform team replaces a fragile Lambda + Step Functions setup with a single Hypero workflow exposed at api.company.com/v1/score.",
     },
     mock: <MockApi />,
@@ -199,16 +197,15 @@ export default function FeaturesPage() {
             </Reveal>
             <Reveal delay={0.05}>
               <h1 className="mt-4 text-5xl sm:text-6xl font-semibold tracking-tight leading-[1.05]">
-                Every primitive you need
+                The building blocks
                 <br />
-                <span className="text-gradient">to ship intelligence.</span>
+                <span className="text-gradient">you actually need.</span>
               </h1>
             </Reveal>
             <Reveal delay={0.15}>
               <p className="mt-6 text-lg text-muted-foreground leading-relaxed max-w-2xl">
-                A canvas, an agent runtime, a workflow engine, integrations,
-                and a reasoning layer — designed to work as one product, not as
-                a stack of tabs.
+                Canvas, agents, workflow engine, integrations, and
+                observability — built together so they actually work together.
               </p>
             </Reveal>
             <Reveal delay={0.25}>
@@ -260,8 +257,8 @@ export default function FeaturesPage() {
         <Container>
           <div className="flex flex-col items-center gap-6 rounded-3xl border border-border bg-card p-12 text-center">
             <SectionHeader
-              title="Build something nobody has built before."
-              description="Hypero gives you everything to ship intelligent workflows. The rest is up to your imagination."
+              title="Ready to get started?"
+              description="Everything you need to build and run intelligent workflows is here. Sign up free and start building."
             />
             <div className="flex flex-wrap justify-center gap-3">
               <Button href="/signup">

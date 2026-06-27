@@ -27,7 +27,7 @@ const PRINCIPLES = [
   {
     icon: <Boxes className="h-4 w-4" />,
     title: "Built for production",
-    desc: "Versioning, observability, retries, and rollouts ship in the box — not as duct tape.",
+    desc: "Versioning, observability, retries, and rollouts are part of the runtime — not afterthoughts you bolt on later.",
   },
 ];
 
@@ -114,9 +114,9 @@ export default function ProductPage() {
             </Reveal>
             <Reveal delay={0.15}>
               <p className="mt-6 text-lg text-muted-foreground leading-relaxed max-w-2xl">
-                Hypero is the visual AI workflow builder. Compose triggers,
-                agents, integrations, and logic on a single canvas — then ship
-                them as production-ready services with one click.
+                Build your workflow on a canvas, test it in the same
+                environment, and deploy when it&apos;s ready. Triggers, agents,
+                integrations, and logic all live in one place.
               </p>
             </Reveal>
             <Reveal delay={0.25}>
@@ -181,7 +181,7 @@ export default function ProductPage() {
         <Container>
           <SectionHeader
             eyebrow="Principles"
-            title="Three ideas, every part of the product."
+            title="What we actually care about."
           />
           <StaggerGroup className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-3">
             {PRINCIPLES.map((p) => (
@@ -206,8 +206,8 @@ export default function ProductPage() {
         <Container>
           <SectionHeader
             eyebrow="Architecture"
-            title="How AI lives inside the system."
-            description="Hypero is a four-layer runtime. Triggers feed the reasoning layer, which orchestrates the workflow engine and integrations to act on the world."
+            title="How it works under the hood."
+            description="Hypero runs as four layers: triggers kick things off, the reasoning layer handles agent calls, the workflow engine manages execution, and integrations handle the actual work."
           />
           <Reveal delay={0.1} className="mt-12">
             <ArchitectureDiagram />
@@ -249,8 +249,9 @@ export default function ProductPage() {
               </Reveal>
               <Reveal delay={0.2}>
                 <p>
-                  Designers can read it. Operators can edit it. Engineers can
-                  extend it. And every run is observable, replayable, and
+                  Anyone on the team can read the canvas. Ops can tweak steps
+                  without filing a ticket. Engineers can drop in custom code
+                  nodes where needed. And every run is logged, replayable, and
                   versioned.
                 </p>
               </Reveal>
@@ -265,7 +266,7 @@ export default function ProductPage() {
           <SectionHeader
             eyebrow="Comparison"
             title="How Hypero compares."
-            description="Hypero combines the canvas of no-code, the breadth of automation tools, and the intelligence of agent platforms — without the trade-offs."
+            description="No-code tools don't handle agents well. Agent frameworks don't handle production well. Hypero was built to handle both."
           />
           <Reveal delay={0.1} className="mt-12">
             <div className="overflow-hidden rounded-2xl border border-border bg-card">
@@ -331,11 +332,11 @@ export default function ProductPage() {
             />
             <div className="relative flex flex-col items-start gap-5 max-w-2xl">
               <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight">
-                Ready to design your first workflow?
+                Want to try it?
               </h2>
               <p className="text-muted-foreground">
-                Spin up a workspace, drop in a trigger, and ship something
-                intelligent in under five minutes.
+                Create a free workspace, build your first workflow, and run it.
+                Takes about five minutes.
               </p>
               <div className="flex flex-wrap gap-3">
                 <Button href="/signup">

@@ -172,15 +172,15 @@ export default function PricingPage() {
             </Reveal>
             <Reveal delay={0.05}>
               <h1 className="text-5xl sm:text-6xl font-semibold tracking-tight leading-[1.05]">
-                Simple pricing.
+                Straightforward pricing.
                 <br />
                 <span className="text-gradient">Scales with your team.</span>
               </h1>
             </Reveal>
             <Reveal delay={0.15}>
               <p className="text-lg text-muted-foreground max-w-2xl">
-                Start free, upgrade when you&apos;re ready, and only pay for
-                what you use. No long-term contracts.
+                Start on the free tier and upgrade when you need more. No
+                annual commitments, no surprise overages.
               </p>
             </Reveal>
           </div>
@@ -277,8 +277,8 @@ export default function PricingPage() {
               </Reveal>
               <Reveal delay={0.1}>
                 <p className="mt-4 text-muted-foreground">
-                  Can&apos;t find what you&apos;re looking for? Reach out and
-                  we&apos;ll get back to you the same day.
+                  Can&apos;t find what you&apos;re looking for? Drop us a line
+                  and we&apos;ll reply the same day.
                 </p>
               </Reveal>
             </div>
@@ -319,11 +319,11 @@ export default function PricingPage() {
             />
             <div className="flex flex-col items-center gap-5 max-w-2xl mx-auto">
               <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight">
-                Ready to design your first workflow?
+                Give it a try.
               </h2>
               <p className="text-muted-foreground">
-                Start on the free plan, no credit card required. Upgrade when
-                you outgrow it.
+                Start on the free plan — no credit card needed. Upgrade when
+                you need more runs or team features.
               </p>
               <div className="flex flex-wrap justify-center gap-3">
                 <Button href="/signup">

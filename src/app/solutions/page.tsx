@@ -35,9 +35,9 @@ const SOLUTIONS: Solution[] = [
     industry: "SaaS startups",
     icon: <Rocket className="h-4 w-4" />,
     problem:
-      "Early-stage teams burn weeks gluing together prompts, cron jobs, and Zaps to ship one intelligent feature — and the result is brittle, opaque, and impossible to iterate on.",
+      "Early-stage teams spend weeks gluing together prompts, cron jobs, and Zaps to ship one AI feature — and none of it is easy to debug or hand off.",
     approach:
-      "With Hypero, founders prototype agentic features on the canvas in an afternoon, expose them as APIs, and embed them straight into the product. Iteration happens in the same artifact that runs in production.",
+      "With Hypero, you prototype the feature on the canvas, expose it as an API, and embed it in the product. You iterate on the same thing that runs in production — no separate staging script.",
     workflow: {
       title: "AI-powered onboarding assistant",
       steps: [
@@ -79,9 +79,9 @@ const SOLUTIONS: Solution[] = [
     industry: "Internal ops teams",
     icon: <Users className="h-4 w-4" />,
     problem:
-      "Ops teams own the long tail of business logic — invoicing edge cases, onboarding exceptions, vendor approvals — and every workflow lives in a different head.",
+      "Ops teams own the long tail of business logic — invoicing edge cases, onboarding exceptions, vendor approvals — and figuring out how something works means finding the right person.",
     approach:
-      "Hypero gives ops a visual canvas they own end-to-end. AI agents handle the fuzzy steps (classification, drafting), deterministic steps handle the exact ones (writes, approvals), and every run is auditable.",
+      "Hypero gives ops a visual canvas they own end-to-end. Agents handle the judgment calls — classification, drafting — deterministic steps handle the writes and approvals, and every run is logged.",
     workflow: {
       title: "Vendor invoice triage",
       steps: [
@@ -103,7 +103,7 @@ const SOLUTIONS: Solution[] = [
     problem:
       "Dev tools teams want to ship AI features — PR review, code search, error triage — but maintaining the prompt + retrieval + evaluation stack pulls engineers off the core product.",
     approach:
-      "Hypero acts as the AI backend for dev tools. Compose retrieval, agents, and evaluations on a canvas, expose them as endpoints, and call them from the IDE, the CLI, or the dashboard.",
+      "Hypero acts as the AI backend for dev tools. Put retrieval, agents, and evaluations on a canvas, expose them as endpoints, and call them from the IDE, CLI, or dashboard.",
     workflow: {
       title: "Pull request reviewer",
       steps: [
@@ -125,7 +125,7 @@ const SOLUTIONS: Solution[] = [
     problem:
       "AI-native startups outgrow notebooks fast — but going from a working agent in Jupyter to a production endpoint usually means rewriting everything in TypeScript.",
     approach:
-      "Hypero is the production runtime for agentic teams. Prototype in the canvas, ship straight to the same endpoint, and use the reasoning layer to debug like you debug a real system.",
+      "Hypero lets you run that notebook agent in production without rewriting it. Prototype on the canvas, ship to the same endpoint, and use the trace viewer to debug it when something behaves unexpectedly.",
     workflow: {
       title: "Multi-agent research assistant",
       steps: [
@@ -155,16 +155,16 @@ export default function SolutionsPage() {
             </Reveal>
             <Reveal delay={0.05}>
               <h1 className="mt-4 text-5xl sm:text-6xl font-semibold tracking-tight leading-[1.05]">
-                Built for the teams
+                Real workflows
                 <br />
-                <span className="text-gradient">shipping the future.</span>
+                <span className="text-gradient">for real teams.</span>
               </h1>
             </Reveal>
             <Reveal delay={0.15}>
               <p className="mt-6 text-lg text-muted-foreground leading-relaxed max-w-2xl">
-                From early-stage SaaS to AI-native startups, teams use Hypero
-                to replace fragile glue code with a single canvas they can read,
-                edit, and trust.
+                SaaS teams, ops teams, and AI engineers use Hypero to replace
+                brittle scripts and patchwork tools with workflows they can
+                actually read and maintain.
               </p>
             </Reveal>
           </div>
@@ -218,7 +218,7 @@ export default function SolutionsPage() {
                 <SectionHeader
                   align="left"
                   title="Don&apos;t see your industry?"
-                  description="Hypero is general purpose. If you have a workflow with humans, AI, or APIs in the loop, we can help you ship it."
+                  description="Hypero works for any workflow that involves APIs, agents, or human decisions. If your use case isn&apos;t listed, it probably still fits."
                 />
               </div>
               <div className="flex flex-wrap gap-3">

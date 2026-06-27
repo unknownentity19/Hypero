@@ -11,7 +11,7 @@ export const SITE = {
   name: "Hypero",
   shortDescription: "Build AI workflows visually.",
   description:
-    "Hypero is the visual AI workflow builder for teams. Compose automations, AI agents, and tools in minutes — not months.",
+    "Hypero is a visual builder for AI workflows. Design, run, and debug automations, agents, and integrations from a single canvas.",
   url:
     process.env.NEXT_PUBLIC_SITE_URL ??
     (process.env.VERCEL_URL

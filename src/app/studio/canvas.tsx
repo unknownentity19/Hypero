@@ -125,6 +125,9 @@ export function Canvas({
     startVy: number;
     moved: boolean;
   } | null>(null);
+  // Carries the "did this gesture pan?" flag from mouseup to the trailing
+  // click, since panRef is already cleared by the time click fires.
+  const panMovedRef = React.useRef(false);
 
   const screenToWorld = React.useCallback(
     (clientX: number, clientY: number) => {
@@ -357,13 +360,20 @@ export function Canvas({
     }
     dragNodeRef.current = null;
     if (draftEdge) onCompleteConnect(null);
+    // Remember whether this gesture actually moved so the trailing click
+    // (which fires after mouseup, once panRef is cleared) can tell a pan
+    // apart from a plain click-to-deselect.
+    panMovedRef.current = panRef.current?.moved ?? false;
     panRef.current = null;
   };
 
   // Treat a non-moved mousedown→mouseup on empty canvas as deselect.
   const onClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target !== e.currentTarget) return;
-    if (panRef.current?.moved) return;
+    if (panMovedRef.current) {
+      panMovedRef.current = false;
+      return;
+    }
     onSelectNode(null);
   };
 

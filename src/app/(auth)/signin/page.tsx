@@ -32,7 +32,13 @@ function SignInForm() {
   const { signIn } = useAuth();
   const router = useRouter();
   const params = useSearchParams();
-  const next = params.get("next") || "/dashboard";
+  // Only allow same-origin relative paths to avoid open-redirect attacks
+  // (e.g. ?next=//evil.com or ?next=https://evil.com).
+  const nextParam = params.get("next");
+  const next =
+    nextParam && nextParam.startsWith("/") && !nextParam.startsWith("//")
+      ? nextParam
+      : "/dashboard";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

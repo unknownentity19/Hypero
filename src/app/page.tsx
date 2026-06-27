@@ -93,12 +93,12 @@ const VALUE_PROPS = [
   {
     icon: <Bot className="h-4 w-4" />,
     title: "AI agents as steps",
-    desc: "Drop reasoning into any workflow. Memory, tool-calling, and guardrails are first class — not bolt-ons.",
+    desc: "Add an AI agent to any step. Memory, tool-calling, and guardrails are configured in one place — no custom wrapper code.",
   },
   {
     icon: <Zap className="h-4 w-4" />,
     title: "Production runtime",
-    desc: "Durable retries, version history, audit logs, and an API endpoint per workflow. Ship to prod from day one.",
+    desc: "Every workflow gets retries, version history, audit logs, and an API endpoint. No extra setup required.",
   },
 ];
 
@@ -112,13 +112,13 @@ const HOW_IT_WORKS = [
   {
     n: "02",
     title: "Plug in intelligence",
-    desc: "Configure agents with tools and memory, or call any model from a node. Use ours, or bring your own keys.",
+    desc: "Configure agents with tools and memory, or call any model from a node. Use our defaults or bring your own API keys.",
     icon: <Bot className="h-4 w-4" />,
   },
   {
     n: "03",
     title: "Ship to production",
-    desc: "Every workflow is automatically a versioned API endpoint with observability, retries, and audit logs.",
+    desc: "Every workflow deploys as a versioned API endpoint. Observability, retries, and audit logs are included.",
     icon: <Boxes className="h-4 w-4" />,
   },
 ];
@@ -139,7 +139,7 @@ const FEATURE_CARDS = [
   {
     icon: <GitBranch className="h-4 w-4" />,
     title: "Durable execution",
-    desc: "Retries, parallel branches, dynamic loops, pause-and-resume — exactly-once semantics built in.",
+    desc: "Retries, parallel branches, dynamic loops, and pause-and-resume. Each run executes exactly once, even through failures.",
     href: "/features#multi-step",
   },
   {
@@ -151,7 +151,7 @@ const FEATURE_CARDS = [
   {
     icon: <Sparkles className="h-4 w-4" />,
     title: "Reasoning observability",
-    desc: "Replay any agent run, diff plans side-by-side, and pin issues directly on the canvas.",
+    desc: "Replay any agent run, compare two runs side-by-side, and trace exactly where things went wrong.",
     href: "/features#reasoning",
   },
   {
@@ -201,7 +201,7 @@ const TESTIMONIALS = [
   },
   {
     quote:
-      "Our prototype-to-production loop went from weeks to hours. The canvas is the source of truth, the API is the deploy artifact.",
+      "We went from a notebook prototype to a production API in the same week. I kept waiting for something to break, but it held up.",
     name: "Priya Raman",
     role: "Engineering lead · Linear",
     initials: "PR",
@@ -272,9 +272,9 @@ export default function HomePage() {
 
             <Reveal delay={0.2}>
               <p className="max-w-2xl text-base sm:text-lg text-muted-foreground leading-relaxed">
-                Hypero is the visual builder for AI agents, automations, and
-                internal tools. Drag, drop, and ship intelligent workflows in
-                minutes — not months.
+                Stop stitching together scripts to run AI features. Hypero
+                gives you a canvas to build workflows visually, wire up your
+                tools, and ship to production.
               </p>
             </Reveal>
 
@@ -320,7 +320,7 @@ export default function HomePage() {
         <Container>
           <Reveal>
             <p className="text-center text-xs uppercase tracking-wider text-muted-foreground">
-              Trusted by builders at fast-moving teams
+              Used by builders at
             </p>
           </Reveal>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 opacity-70">
@@ -341,8 +341,8 @@ export default function HomePage() {
         <Container>
           <SectionHeader
             eyebrow="Why Hypero"
-            title="The fastest path from idea to AI in production."
-            description="Hypero replaces the patchwork of automation tools, prompt scripts, and custom backends with a single canvas built for both prototyping and production."
+            title="From prototype to production without the mess."
+            description="Most teams end up with a Zapier workflow, a Python script, and three dashboards to build one intelligent feature. Hypero brings it into one canvas that works the same in development and production."
           />
           <StaggerGroup className="mt-14 grid grid-cols-1 gap-4 md:grid-cols-3">
             {VALUE_PROPS.map((v, i) => {
@@ -374,8 +374,8 @@ export default function HomePage() {
         <Container>
           <SectionHeader
             eyebrow="How it works"
-            title="Three steps. No glue code."
-            description="From whiteboard to production in an afternoon."
+            title="Three steps from idea to deployment."
+            description="You can go from a blank canvas to a deployed, working workflow in a few hours."
           />
           <div className="relative mt-14">
             <div
@@ -424,8 +424,8 @@ export default function HomePage() {
         <Container>
           <SectionHeader
             eyebrow="Platform"
-            title="Everything you need, in one product."
-            description="Each capability is a fully-developed feature, not a checkbox. Click any to dive deeper."
+            title="Everything in one place."
+            description="Each piece is fully built out, not just checked off. Click any to see how it works."
           />
           <StaggerGroup className="mt-14 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {FEATURE_CARDS.map((f, i) => {
@@ -467,14 +467,14 @@ export default function HomePage() {
               </Reveal>
               <Reveal delay={0.05}>
                 <h2 className="mt-4 text-3xl sm:text-4xl font-semibold tracking-tight">
-                  Connect Hypero to anything you already run.
+                  Connects to what your team already uses.
                 </h2>
               </Reveal>
               <Reveal delay={0.1}>
                 <p className="mt-4 text-muted-foreground leading-relaxed">
-                  Native connectors for the tools your team already uses, and a
-                  first-class HTTP node for everything else. OAuth, API keys,
-                  and scoped service accounts ship in the box.
+                  Native connectors for the tools your team already uses. For
+                  anything else, there&apos;s a generic HTTP node. OAuth, API
+                  keys, and service accounts are all supported out of the box.
                 </p>
               </Reveal>
               <Reveal delay={0.15}>
@@ -557,9 +557,9 @@ export default function HomePage() {
       <Section className="py-20">
         <Container>
           <SectionHeader
-            eyebrow="What customers say"
-            title="Loved by ops, eng, and AI teams."
-            description="Hypero powers AI workflows at startups, scale-ups, and Fortune 500s."
+            eyebrow="What users say"
+            title="From teams actually using it."
+            description="A mix of startups, scale-ups, and larger engineering teams."
           />
           <StaggerGroup className="mt-14 grid grid-cols-1 gap-4 md:grid-cols-3">
             {TESTIMONIALS.map((testimonial, i) => {
@@ -612,8 +612,8 @@ export default function HomePage() {
         <Container>
           <SectionHeader
             eyebrow="Security & compliance"
-            title="Built for teams who care about both."
-            description="Hypero is designed from day one for teams shipping AI in regulated environments."
+            title="Security and compliance baked in."
+            description="If your team works in healthcare, finance, or just takes security seriously, Hypero covers the requirements without extra configuration."
           />
           <StaggerGroup className="mt-14 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
             {SECURITY.map((s, i) => {
@@ -739,11 +739,11 @@ console.log(result.assignedTo); // "sales-east"`}
             <div className="flex flex-col items-center gap-5 max-w-2xl mx-auto">
               <Badge variant="outline">Get started</Badge>
               <h2 className="text-4xl sm:text-5xl font-semibold tracking-tight">
-                Ship something intelligent today.
+                Build your first workflow today.
               </h2>
               <p className="text-muted-foreground">
-                Spin up a workspace, drop in a trigger, and ship your first
-                AI-powered workflow in under five minutes.
+                Open the studio, drop in a trigger, and have a working AI
+                workflow running in a few minutes.
               </p>
               <div className="flex flex-wrap justify-center gap-3">
                 <Button href="/studio" size="lg">
