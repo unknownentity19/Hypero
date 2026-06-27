@@ -217,7 +217,12 @@ export function Canvas({
     // toolbar / edge-delete buttons), which handle their own taps.
     const target = e.target as HTMLElement | null;
     if (target?.closest("button")) return;
-    e.currentTarget.setPointerCapture?.(e.pointerId);
+    // Register the pointer and arm the gesture FIRST, before anything that can
+    // throw. setPointerCapture is best-effort: on some real mobile browsers it
+    // can throw (e.g. NotFoundError for a pointer the engine considers stale)
+    // and, when it ran first, that exception aborted the rest of this handler
+    // — leaving panRef unset so onCanvasPointerMove bailed and one-finger pan
+    // silently died on hardware while emulation (which never throws) worked.
     pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     const v = viewportRef.current;
     if (pointersRef.current.size === 1) {
@@ -241,6 +246,14 @@ export function Canvas({
         vy: v.y,
         vScale: v.scale,
       };
+    }
+    // Best-effort capture so moves keep flowing even if the finger strays over
+    // a child node. Done LAST and guarded — a throw here must not undo the
+    // gesture state armed above.
+    try {
+      e.currentTarget.setPointerCapture?.(e.pointerId);
+    } catch {
+      /* capture is optional; pan/pinch work without it */
     }
   };
 
@@ -287,7 +300,11 @@ export function Canvas({
   const onCanvasPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!pointersRef.current.has(e.pointerId)) return;
     pointersRef.current.delete(e.pointerId);
-    e.currentTarget.releasePointerCapture?.(e.pointerId);
+    try {
+      e.currentTarget.releasePointerCapture?.(e.pointerId);
+    } catch {
+      /* may throw if capture was never granted; safe to ignore */
+    }
     const remaining = pointersRef.current.size;
     if (remaining < 2) pinchRef.current = null;
     if (remaining === 0) {
@@ -432,7 +449,7 @@ export function Canvas({
       onClick={onClick}
       onDrop={onDrop}
       onDragOver={onDragOver}
-      style={gridStyle}
+      style={{ ...gridStyle, touchAction: "none" }}
       className={cn(
         // `touch-none` hands every touch gesture (one-finger pan, two-finger
         // pinch) to our own handlers. Without it the browser claims them for
