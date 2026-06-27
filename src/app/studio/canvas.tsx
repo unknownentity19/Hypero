@@ -314,52 +314,25 @@ export function Canvas({
   };
 
   const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Node drag — write raw world coords on every frame and snap only on
-    // release. Snapping mid-drag makes the node feel sticky / steppy.
-    if (dragNodeRef.current) {
-      const { nodeId, offsetX, offsetY } = dragNodeRef.current;
-      const { x, y } = screenToWorld(e.clientX, e.clientY);
-      onMoveNode(nodeId, x - offsetX, y - offsetY);
-      return;
+    // The container only handles panning the empty canvas. Node dragging and
+    // edge connecting are driven by Pointer Events on the nodes themselves
+    // (see the NodeView wiring below) so they work with touch and pen too.
+    if (!panRef.current) return;
+    const dx = e.clientX - panRef.current.startClientX;
+    const dy = e.clientY - panRef.current.startClientY;
+    if (!panRef.current.moved && Math.hypot(dx, dy) > PAN_DRAG_THRESHOLD) {
+      panRef.current.moved = true;
     }
-    // Pan.
-    if (panRef.current) {
-      const dx = e.clientX - panRef.current.startClientX;
-      const dy = e.clientY - panRef.current.startClientY;
-      if (
-        !panRef.current.moved &&
-        Math.hypot(dx, dy) > PAN_DRAG_THRESHOLD
-      ) {
-        panRef.current.moved = true;
-      }
-      if (panRef.current.moved) {
-        setViewport((v) => ({
-          ...v,
-          x: panRef.current!.startVx + dx,
-          y: panRef.current!.startVy + dy,
-        }));
-      }
-    }
-    // Live draft edge.
-    if (draftEdge) {
-      const { x, y } = screenToWorld(e.clientX, e.clientY);
-      onUpdateDraft(x, y);
+    if (panRef.current.moved) {
+      setViewport((v) => ({
+        ...v,
+        x: panRef.current!.startVx + dx,
+        y: panRef.current!.startVy + dy,
+      }));
     }
   };
 
   const onMouseUp = () => {
-    // Snap-to-grid on release so the node settles to a clean position
-    // without fighting the cursor mid-drag.
-    if (dragNodeRef.current) {
-      const dragged = workflow.nodes.find(
-        (n) => n.id === dragNodeRef.current!.nodeId,
-      );
-      if (dragged) {
-        onMoveNode(dragged.id, snap(dragged.x), snap(dragged.y));
-      }
-    }
-    dragNodeRef.current = null;
-    if (draftEdge) onCompleteConnect(null);
     // Remember whether this gesture actually moved so the trailing click
     // (which fires after mouseup, once panRef is cleared) can tell a pan
     // apart from a plain click-to-deselect.
@@ -561,8 +534,13 @@ export function Canvas({
               running={runningNodeId === node.id}
               done={finishedNodeIds.has(node.id)}
               onSelect={() => onSelectNode(node.id)}
-              onMouseDown={(e) => {
+              onPointerDown={(e) => {
+                // Pointer Events unify mouse, touch and pen, so node dragging
+                // works on phones and tablets too. Capturing the pointer keeps
+                // move/up events flowing to this node even if the finger or
+                // cursor leaves its bounds mid-drag.
                 e.stopPropagation();
+                e.currentTarget.setPointerCapture?.(e.pointerId);
                 const { x, y } = screenToWorld(e.clientX, e.clientY);
                 dragNodeRef.current = {
                   nodeId: node.id,
@@ -571,13 +549,43 @@ export function Canvas({
                 };
                 onSelectNode(node.id);
               }}
-              onStartConnect={(e) => {
+              onPointerMove={(e) => {
+                if (!dragNodeRef.current) return;
+                const { nodeId, offsetX, offsetY } = dragNodeRef.current;
+                const { x, y } = screenToWorld(e.clientX, e.clientY);
+                onMoveNode(nodeId, x - offsetX, y - offsetY);
+              }}
+              onPointerUp={() => {
+                if (!dragNodeRef.current) return;
+                const dragged = workflow.nodes.find(
+                  (n) => n.id === dragNodeRef.current!.nodeId,
+                );
+                if (dragged) {
+                  onMoveNode(dragged.id, snap(dragged.x), snap(dragged.y));
+                }
+                dragNodeRef.current = null;
+              }}
+              onConnectPointerDown={(e) => {
                 e.stopPropagation();
+                e.currentTarget.setPointerCapture?.(e.pointerId);
                 const { x, y } = screenToWorld(e.clientX, e.clientY);
                 onStartConnect(node.id, x, y);
               }}
-              onCompleteConnect={() => {
-                if (draftEdge) onCompleteConnect(node.id);
+              onConnectPointerMove={(e) => {
+                if (!draftEdge) return;
+                const { x, y } = screenToWorld(e.clientX, e.clientY);
+                onUpdateDraft(x, y);
+              }}
+              onConnectPointerUp={(e) => {
+                if (!draftEdge) return;
+                // The captured pointer fires `up` on the source handle, so
+                // find the node under the release point ourselves to know
+                // where the user dropped the connection.
+                const el = document.elementFromPoint(e.clientX, e.clientY);
+                const target = el
+                  ? (el as HTMLElement).closest<HTMLElement>("[data-node-id]")
+                  : null;
+                onCompleteConnect(target?.dataset.nodeId ?? null);
               }}
             />
           ))}
@@ -706,6 +714,7 @@ function EdgeView({
         <motion.circle
           r={3.5}
           fill="rgb(var(--gradient-via))"
+          className="edge-pulse-dot"
           initial={{ offsetDistance: "0%" }}
           animate={{ offsetDistance: "100%" }}
           transition={{ duration: 0.9, repeat: Infinity, ease: "easeInOut" }}
@@ -764,18 +773,24 @@ function NodeView({
   running,
   done,
   onSelect,
-  onMouseDown,
-  onStartConnect,
-  onCompleteConnect,
+  onPointerDown,
+  onPointerMove,
+  onPointerUp,
+  onConnectPointerDown,
+  onConnectPointerMove,
+  onConnectPointerUp,
 }: {
   node: WorkflowNode;
   selected: boolean;
   running: boolean;
   done: boolean;
   onSelect: () => void;
-  onMouseDown: (e: React.MouseEvent) => void;
-  onStartConnect: (e: React.MouseEvent) => void;
-  onCompleteConnect: () => void;
+  onPointerDown: (e: React.PointerEvent) => void;
+  onPointerMove: (e: React.PointerEvent) => void;
+  onPointerUp: (e: React.PointerEvent) => void;
+  onConnectPointerDown: (e: React.PointerEvent) => void;
+  onConnectPointerMove: (e: React.PointerEvent) => void;
+  onConnectPointerUp: (e: React.PointerEvent) => void;
 }) {
   const category = NODE_CATEGORY[node.kind];
   const tone = CATEGORY_TONE[category] ?? CATEGORY_TONE.action;
@@ -794,12 +809,14 @@ function NodeView({
 
   return (
     <div
-      onMouseDown={onMouseDown}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
       onClick={(e) => {
         e.stopPropagation();
         onSelect();
       }}
-      onMouseUp={onCompleteConnect}
+      data-node-id={node.id}
       style={{
         width: NODE_W,
         height: NODE_H,
@@ -808,6 +825,8 @@ function NodeView({
         // Hint to the compositor that the node will animate frequently.
         willChange: "transform",
         transition: "box-shadow 150ms ease-out",
+        // Stop the browser from treating a drag as page scroll on touch.
+        touchAction: "none",
       }}
       className={cn(
         "absolute left-0 top-0 cursor-grab select-none rounded-xl border bg-card",
@@ -864,8 +883,11 @@ function NodeView({
       </span>
       <button
         type="button"
-        onMouseDown={onStartConnect}
+        onPointerDown={onConnectPointerDown}
+        onPointerMove={onConnectPointerMove}
+        onPointerUp={onConnectPointerUp}
         aria-label="Connect output"
+        style={{ touchAction: "none" }}
         className="absolute right-0 top-1/2 z-10 flex h-5 w-5 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full border border-border bg-background text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
       >
         <span className="block h-2 w-2 rounded-full bg-current" />

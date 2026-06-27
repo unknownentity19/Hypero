@@ -338,6 +338,16 @@ body {
   animation: edge-pulse 3.4s ease-in-out infinite;
 }
 
+/* The CSS Motion Path API is unsupported on older browsers (Safari < 15.4).
+ * Without it the dots would render stranded at the SVG origin, so hide them
+ * entirely as a clean fallback — the edges and nodes still render. */
+@supports not (offset-path: path("M0 0")) {
+  .animate-edge-pulse,
+  .edge-pulse-dot {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .reveal {
     opacity: 1;

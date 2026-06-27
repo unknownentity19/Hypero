@@ -37,7 +37,10 @@ export function FloatingNodes() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none absolute inset-0 overflow-hidden"
+      // Purely decorative chips. On narrow phones the hero column is too
+      // tight for them to sit in the margins, so they collide with the
+      // headline — hide them below `md` and show them once there's room.
+      className="pointer-events-none absolute inset-0 hidden overflow-hidden md:block"
     >
       {FLOATERS.map((f) => (
         <span
