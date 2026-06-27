@@ -334,7 +334,7 @@ export default function StudioPage() {
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-9rem)] w-full flex-col">
+    <div className="studio-root flex min-h-[calc(100vh-9rem)] w-full flex-col">
       {/* Top bar */}
       <div className="flex flex-wrap items-center gap-3 border-b border-border bg-background/80 px-4 py-3 backdrop-blur sm:px-6">
         <div className="flex min-w-0 flex-1 items-center gap-3">

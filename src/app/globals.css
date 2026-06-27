@@ -401,3 +401,34 @@ body {
   border-radius: 0.35rem;
   font-size: 0.85em;
 }
+
+
+/* ---------------------------------------------------------------------------
+   Touch / low-power GPU fallbacks for the Studio.
+
+   On phones, opening the studio with Chrome's "Desktop site" toggle renders
+   the full desktop UI (palette + inspector + every frosted panel) on a mobile
+   GPU. Stacked `backdrop-filter: blur()` layers are a well-known trigger for
+   GPU-process crashes on Android (Adreno / Mali drivers) — the tab dies with
+   "this page couldn't load". Width/pointer media queries don't fire in desktop
+   mode, so we key off real touch hardware (navigator.maxTouchPoints) and add
+   `.gfx-lite` to <html> before first paint (inline script in the root layout).
+   The rules below only bite inside `.studio-root`, so the rest of the site
+   keeps its frosted-glass look. Surfaces are made opaque so they still read as
+   intentional panels without the blur.
+--------------------------------------------------------------------------- */
+.gfx-lite .studio-root [class*="backdrop-blur"] {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+.gfx-lite .studio-root [class*="bg-card/"] {
+  background-color: rgb(var(--card)) !important;
+}
+.gfx-lite .studio-root [class*="bg-background/"] {
+  background-color: rgb(var(--background)) !important;
+}
+/* The animated connection dots ride an offset-path; skip them on touch GPUs. */
+.gfx-lite .studio-root .animate-edge-pulse,
+.gfx-lite .studio-root .edge-pulse-dot {
+  display: none !important;
+}

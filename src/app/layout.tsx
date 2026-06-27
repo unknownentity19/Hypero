@@ -104,6 +104,20 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${bricolage.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        {/* Flag real touch hardware before first paint. The studio drops its
+            frosted-glass blur on touch devices (see `.gfx-lite .studio-root`
+            in globals.css): stacked backdrop-filter layers crash some Android
+            GPU drivers when the studio is opened in Chrome's "Desktop site"
+            mode, where width/pointer media queries no longer match. Running
+            synchronously here avoids a first-frame composite with blur on. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{if(navigator.maxTouchPoints>0||matchMedia('(any-pointer:coarse)').matches){document.documentElement.classList.add('gfx-lite')}}catch(e){}",
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <ThemeProvider>
           <AuthProvider>
