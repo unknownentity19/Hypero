@@ -70,18 +70,23 @@ body {
    the rough edges browsers introduce on phones (and Android in particular):
    - text-size-adjust stops Chrome/Firefox on Android from inflating body
      copy when the page is wider than the viewport.
-   - overflow-x: hidden on the document keeps SVG/preview cards from
-     introducing a 1px horizontal scroll on the body.
+   - overflow-x: clip keeps SVG/preview cards from introducing a 1px
+     horizontal scroll WITHOUT turning the element into a scroll container.
+     (`overflow-x: hidden` forces `overflow-y` to `auto`; combined with the
+     `h-full` height on <html> that made <html> a fixed-height scroll box that
+     one-finger touch can't drive — so the whole site refused to scroll on
+     phones. `clip` is compatible with `overflow-y: visible`, so the page
+     scrolls normally.)
    - tap-highlight removes the grey flash on every touch.
    - overscroll-behavior-y stops the rubber-band bounce from showing the
      browser chrome's bg colour (which on Android can be #f1f1f1). */
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 body {
-  overflow-x: hidden;
+  overflow-x: clip;
   overscroll-behavior-y: none;
   -webkit-tap-highlight-color: transparent;
 }
