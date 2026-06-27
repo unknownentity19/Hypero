@@ -462,7 +462,10 @@ export function Canvas({
       onDragOver={onDragOver}
       style={gridStyle}
       className={cn(
-        "relative h-full w-full overflow-hidden rounded-xl border border-border bg-card",
+        // `touch-none` hands every touch gesture (one-finger pan, two-finger
+        // pinch) to our own handlers. Without it the browser claims them for
+        // page scroll / pinch-zoom and the canvas feels unresponsive on phones.
+        "relative h-full w-full touch-none overflow-hidden rounded-xl border border-border bg-card",
         panRef.current?.moved ? "cursor-grabbing" : "cursor-grab",
       )}
       role="region"
