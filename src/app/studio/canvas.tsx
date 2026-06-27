@@ -213,28 +213,13 @@ export function Canvas({
     }
 
     const onTouchStart = (e: TouchEvent) => {
-      // Don't hijack touches that started on a node or an interactive control
-      // (connect handle, delete button, …) — those drive their own gestures.
-      // We intentionally do NOT require `e.target === node`: real browsers may
-      // report the target as a non-interactive descendant (the SVG edge layer,
-      // the world layer), and demanding an exact container match silently
-      // killed panning on some phones. Anything that isn't a node/button pans.
-      const target = e.target as HTMLElement | null;
-      if (target?.closest("[data-node-id]") || target?.closest("button")) {
-        return;
-      }
       const rect = node.getBoundingClientRect();
       const v = viewportRef.current;
-      if (e.touches.length === 1) {
-        const t = e.touches[0]!;
-        panStart = {
-          clientX: t.clientX,
-          clientY: t.clientY,
-          vx: v.x,
-          vy: v.y,
-          moved: false,
-        };
-      } else if (e.touches.length === 2) {
+
+      // Two fingers ALWAYS means pinch-zoom the canvas — never a node gesture —
+      // so we handle it before any target check. (Requiring an empty-canvas
+      // target here used to block zooming whenever a finger landed on a node.)
+      if (e.touches.length >= 2) {
         e.preventDefault();
         panStart = null;
         const a = e.touches[0]!;
@@ -248,7 +233,27 @@ export function Canvas({
           vy: v.y,
           vScale: v.scale,
         };
+        return;
       }
+
+      // One finger: pan, unless the touch started on a node or interactive
+      // control (connect handle, delete button, …) which drive their own
+      // gestures. We intentionally do NOT require `e.target === node`: real
+      // browsers may report the target as a non-interactive descendant (the
+      // SVG edge layer, the world layer), and demanding an exact container
+      // match silently killed panning on some phones.
+      const target = e.target as HTMLElement | null;
+      if (target?.closest("[data-node-id]") || target?.closest("button")) {
+        return;
+      }
+      const t = e.touches[0]!;
+      panStart = {
+        clientX: t.clientX,
+        clientY: t.clientY,
+        vx: v.x,
+        vy: v.y,
+        moved: false,
+      };
     };
 
     const onTouchMove = (e: TouchEvent) => {
