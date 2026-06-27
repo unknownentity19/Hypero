@@ -254,6 +254,12 @@ export function Canvas({
         vy: v.y,
         moved: false,
       };
+      // Claim the gesture immediately. The two-finger path already does this
+      // and works reliably; a single-finger touch that is NOT preventDefaulted
+      // on touchstart can be swallowed by the browser's own gesture handling
+      // before our first qualifying touchmove arrives — which left one-finger
+      // panning dead on real phones even though pinch-zoom worked.
+      e.preventDefault();
     };
 
     const onTouchMove = (e: TouchEvent) => {
@@ -280,6 +286,10 @@ export function Canvas({
         return;
       }
       if (e.touches.length === 1 && panStart) {
+        // Keep owning the gesture for every move so the browser can't reclaim
+        // it mid-drag. The threshold below only decides when the pan visually
+        // starts (so a stationary tap can still fall through to deselect).
+        e.preventDefault();
         const t = e.touches[0]!;
         const dx = t.clientX - panStart.clientX;
         const dy = t.clientY - panStart.clientY;
@@ -287,7 +297,6 @@ export function Canvas({
           panStart.moved = true;
         }
         if (panStart.moved) {
-          e.preventDefault();
           setViewport((v) => ({
             ...v,
             x: panStart!.vx + dx,
