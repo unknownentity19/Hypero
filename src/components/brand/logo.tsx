@@ -37,7 +37,16 @@ export function LogoMark({
       alt=""
       aria-hidden
       priority
-      className={cn("shrink-0 object-contain", sizeClass, className)}
+      draggable={false}
+      // Deter casual saving/dragging of the mark: `pointer-events-none`
+      // means a right-click targets the surrounding element (no "Save image"
+      // entry) and the image can't be dragged out, while link clicks still
+      // pass through. `select-none` + `-webkit-user-drag` cover the rest.
+      className={cn(
+        "shrink-0 object-contain pointer-events-none select-none [-webkit-user-drag:none]",
+        sizeClass,
+        className,
+      )}
     />
   );
 }
@@ -53,7 +62,7 @@ export function Logo({
   size?: Size;
 }) {
   return (
-    <span className={cn("inline-flex items-center gap-2.5", className)}>
+    <span className={cn("inline-flex items-center gap-2.5 select-none", className)}>
       <LogoMark size={size} />
       <span
         className={cn(
