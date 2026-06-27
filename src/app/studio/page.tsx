@@ -17,6 +17,7 @@ import { Canvas } from "./canvas";
 import { Inspector } from "./inspector";
 import { Palette } from "./palette";
 import { RunLog } from "./run-log";
+import { TouchDebugHUD } from "./touch-debug";
 import { NODE_META, STORAGE_KEY } from "./constants";
 import { TEMPLATES } from "./templates";
 import type {
@@ -335,6 +336,7 @@ export default function StudioPage() {
 
   return (
     <div className="studio-root flex min-h-[calc(100vh-9rem)] w-full flex-col">
+      <TouchDebugHUD />
       {/* Top bar */}
       <div className="flex flex-wrap items-center gap-3 border-b border-border bg-background/80 px-4 py-3 backdrop-blur sm:px-6">
         <div className="flex min-w-0 flex-1 items-center gap-3">
