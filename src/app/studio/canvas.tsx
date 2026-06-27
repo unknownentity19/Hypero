@@ -207,10 +207,16 @@ export function Canvas({
   // for a node press). Here we handle panning the empty canvas (one pointer)
   // and pinch-zoom (two pointers) with the same unified Pointer Events.
   const onCanvasPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    // Only the empty canvas pans/zooms. A press on a node/button is handled by
-    // that element and stops propagation before reaching here; the guard is a
-    // belt-and-braces check.
-    if (e.target !== e.currentTarget) return;
+    // Node presses never reach here — NodeView.onPointerDown stops propagation
+    // — so any pointerdown we receive is on empty canvas. We deliberately do
+    // NOT require `e.target === e.currentTarget`: on real devices the browser
+    // may report the target as a non-interactive descendant (the world layer,
+    // the SVG edge layer, the grid background) rather than the container itself,
+    // and that strict check silently killed one-finger panning on some phones.
+    // The only thing we skip is a press on an interactive control (the zoom
+    // toolbar / edge-delete buttons), which handle their own taps.
+    const target = e.target as HTMLElement | null;
+    if (target?.closest("button")) return;
     e.currentTarget.setPointerCapture?.(e.pointerId);
     pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     const v = viewportRef.current;
