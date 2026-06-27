@@ -110,6 +110,13 @@ export function Canvas({
     y: 0,
     scale: 1,
   });
+  // Always-current mirror of `viewport`. The native touch listeners are bound
+  // once (empty deps) and must read the live viewport *synchronously* inside
+  // touchstart — reading it via a `setViewport` updater defers the read to
+  // React's commit phase, and on real phones touchmove can fire first, which
+  // dropped the whole gesture. A ref sidesteps that race.
+  const viewportRef = React.useRef(viewport);
+  viewportRef.current = viewport;
 
   // Active gesture state. Refs are the right tool here — the gesture is a
   // mouse-driven side effect, not React-rendered state.
@@ -206,38 +213,41 @@ export function Canvas({
     }
 
     const onTouchStart = (e: TouchEvent) => {
-      // Don't hijack touches that started on nodes / toolbar / etc.
-      if (e.target !== node) return;
+      // Don't hijack touches that started on a node or an interactive control
+      // (connect handle, delete button, …) — those drive their own gestures.
+      // We intentionally do NOT require `e.target === node`: real browsers may
+      // report the target as a non-interactive descendant (the SVG edge layer,
+      // the world layer), and demanding an exact container match silently
+      // killed panning on some phones. Anything that isn't a node/button pans.
+      const target = e.target as HTMLElement | null;
+      if (target?.closest("[data-node-id]") || target?.closest("button")) {
+        return;
+      }
       const rect = node.getBoundingClientRect();
+      const v = viewportRef.current;
       if (e.touches.length === 1) {
         const t = e.touches[0]!;
-        setViewport((v) => {
-          panStart = {
-            clientX: t.clientX,
-            clientY: t.clientY,
-            vx: v.x,
-            vy: v.y,
-            moved: false,
-          };
-          return v;
-        });
+        panStart = {
+          clientX: t.clientX,
+          clientY: t.clientY,
+          vx: v.x,
+          vy: v.y,
+          moved: false,
+        };
       } else if (e.touches.length === 2) {
         e.preventDefault();
         panStart = null;
         const a = e.touches[0]!;
         const b = e.touches[1]!;
         const { cx, cy } = midpoint(a, b, rect);
-        setViewport((v) => {
-          pinchStart = {
-            distance: distance(a, b),
-            cx,
-            cy,
-            vx: v.x,
-            vy: v.y,
-            vScale: v.scale,
-          };
-          return v;
-        });
+        pinchStart = {
+          distance: distance(a, b),
+          cx,
+          cy,
+          vx: v.x,
+          vy: v.y,
+          vScale: v.scale,
+        };
       }
     };
 
