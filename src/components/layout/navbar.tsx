@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   BookOpen,
   Boxes,
@@ -259,16 +258,11 @@ export function Navbar() {
                       )}
                     />
                   </button>
-                  <AnimatePresence>
-                    {openMenu === menu.label ? (
-                      <motion.div
-                        initial={{ opacity: 0, y: -4 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -4 }}
-                        transition={{ duration: 0.14 }}
+                  {openMenu === menu.label ? (
+                      <div
                         role="menu"
                         onMouseLeave={() => setOpenMenu(null)}
-                        className="absolute left-0 top-full z-30 mt-2 w-72 overflow-hidden rounded-2xl border border-border bg-card shadow-lg"
+                        className="animate-pop-down absolute left-0 top-full z-30 mt-2 w-72 overflow-hidden rounded-2xl border border-border bg-card shadow-lg"
                       >
                         <ul className="p-1.5">
                           {menu.items.map((item) => {
@@ -312,9 +306,8 @@ export function Navbar() {
                             );
                           })}
                         </ul>
-                      </motion.div>
+                      </div>
                     ) : null}
-                  </AnimatePresence>
                 </li>
               ))}
             </ul>
@@ -361,15 +354,10 @@ export function Navbar() {
                   )}
                 />
               </button>
-              <AnimatePresence>
-                {accountMenuOpen ? (
-                  <motion.div
-                    initial={{ opacity: 0, y: -4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -4 }}
-                    transition={{ duration: 0.14 }}
+              {accountMenuOpen ? (
+                  <div
                     role="menu"
-                    className="absolute right-0 top-full z-30 mt-2 w-72 overflow-hidden rounded-2xl border border-border bg-card shadow-lg"
+                    className="animate-pop-down absolute right-0 top-full z-30 mt-2 w-72 overflow-hidden rounded-2xl border border-border bg-card shadow-lg"
                   >
                     <div className="border-b border-border px-3 py-3">
                       <p className="text-sm font-medium text-foreground truncate">
@@ -419,9 +407,8 @@ export function Navbar() {
                       </span>
                       Sign out
                     </button>
-                  </motion.div>
+                  </div>
                 ) : null}
-              </AnimatePresence>
             </div>
           ) : (
             <div className="relative hidden md:block" ref={accountRef}>
@@ -445,15 +432,10 @@ export function Navbar() {
                   )}
                 />
               </button>
-              <AnimatePresence>
-                {accountMenuOpen ? (
-                  <motion.div
-                    initial={{ opacity: 0, y: -4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -4 }}
-                    transition={{ duration: 0.14 }}
+              {accountMenuOpen ? (
+                  <div
                     role="menu"
-                    className="absolute right-0 top-full z-30 mt-2 w-72 overflow-hidden rounded-2xl border border-border bg-card shadow-lg"
+                    className="animate-pop-down absolute right-0 top-full z-30 mt-2 w-72 overflow-hidden rounded-2xl border border-border bg-card shadow-lg"
                   >
                     <ul className="p-1.5">
                       <AccountMenuItem
@@ -471,9 +453,8 @@ export function Navbar() {
                         onClick={() => setAccountMenuOpen(false)}
                       />
                     </ul>
-                  </motion.div>
+                  </div>
                 ) : null}
-              </AnimatePresence>
             </div>
           )}
 
@@ -493,14 +474,9 @@ export function Navbar() {
       </div>
 
       {/* Mobile expanded menu */}
-      <AnimatePresence>
-        {mobileOpen ? (
-          <motion.div
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.14 }}
-            className="md:hidden border-t border-border bg-background max-h-[calc(100vh-4rem)] overflow-y-auto overscroll-contain"
+      {mobileOpen ? (
+          <div
+            className="animate-pop-down md:hidden border-t border-border bg-background max-h-[calc(100vh-4rem)] overflow-y-auto overscroll-contain"
           >
             <div className="mx-auto max-w-6xl px-6 py-4 flex flex-col gap-5">
               <ul className="flex flex-col gap-1">
@@ -605,9 +581,8 @@ export function Navbar() {
                 )}
               </div>
             </div>
-          </motion.div>
+          </div>
         ) : null}
-      </AnimatePresence>
     </header>
   );
 }

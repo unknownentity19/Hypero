@@ -1,6 +1,3 @@
-"use client";
-
-import { motion, useReducedMotion } from "framer-motion";
 import {
   Bot,
   Database,
@@ -163,8 +160,6 @@ function getNode(id: string) {
 const px = (n: number, total: number) => `${(n / total) * 100}%`;
 
 export function WorkflowPreview({ className }: { className?: string }) {
-  const reduceMotion = useReducedMotion();
-
   return (
     <div
       className={cn(
@@ -184,9 +179,7 @@ export function WorkflowPreview({ className }: { className?: string }) {
         </div>
         <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-400">
           <span className="relative flex h-1.5 w-1.5">
-            {!reduceMotion ? (
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-60" />
-            ) : null}
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-60" />
             <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
           </span>
           Live
@@ -274,36 +267,24 @@ export function WorkflowPreview({ className }: { className?: string }) {
                   strokeWidth={1.5}
                   fill="none"
                 />
-                {!reduceMotion ? (
-                  <>
-                    <motion.circle
-                      r={9}
-                      fill="url(#pulse-glow)"
-                      initial={{ offsetDistance: "0%" }}
-                      animate={{ offsetDistance: "100%" }}
-                      transition={{
-                        duration: 3.4,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                        delay: i * 0.35,
-                      }}
-                      style={{ offsetPath: `path("${path}")` }}
-                    />
-                    <motion.circle
-                      r={3}
-                      fill="rgb(var(--gradient-via))"
-                      initial={{ offsetDistance: "0%" }}
-                      animate={{ offsetDistance: "100%" }}
-                      transition={{
-                        duration: 3.4,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                        delay: i * 0.35,
-                      }}
-                      style={{ offsetPath: `path("${path}")` }}
-                    />
-                  </>
-                ) : null}
+                <circle
+                  r={9}
+                  fill="url(#pulse-glow)"
+                  className="animate-edge-pulse"
+                  style={{
+                    offsetPath: `path("${path}")`,
+                    animationDelay: `${i * 0.35}s`,
+                  }}
+                />
+                <circle
+                  r={3}
+                  fill="rgb(var(--gradient-via))"
+                  className="animate-edge-pulse"
+                  style={{
+                    offsetPath: `path("${path}")`,
+                    animationDelay: `${i * 0.35}s`,
+                  }}
+                />
               </g>
             );
           })}
@@ -313,17 +294,10 @@ export function WorkflowPreview({ className }: { className?: string }) {
           const tone = CATEGORY_TONES[node.category];
           const Icon = node.icon;
           return (
-            <motion.div
+            <div
               key={node.id}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.5,
-                delay: 0.1 + i * 0.07,
-                ease: [0.21, 0.47, 0.32, 0.98],
-              }}
               className={cn(
-                "absolute flex flex-col rounded-xl border bg-card px-2.5 py-2",
+                "animate-fade-up absolute flex flex-col rounded-xl border bg-card px-2.5 py-2",
                 tone.border,
                 tone.halo,
                 node.accent && "ring-1 ring-violet-500/30",
@@ -333,6 +307,7 @@ export function WorkflowPreview({ className }: { className?: string }) {
                 top: px(node.y, VIEW_H),
                 width: px(NODE_W, VIEW_W),
                 height: px(NODE_H, VIEW_H),
+                animationDelay: `${0.1 + i * 0.07}s`,
               }}
             >
               <div className="flex items-center gap-2">
@@ -361,7 +336,7 @@ export function WorkflowPreview({ className }: { className?: string }) {
               <span className="mt-0.5 truncate font-mono text-[10.5px] text-muted-foreground">
                 {node.sub}
               </span>
-            </motion.div>
+            </div>
           );
         })}
 

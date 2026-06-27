@@ -218,6 +218,27 @@ body {
   animation: float-y 6s ease-in-out infinite;
 }
 
+/* Hero floaters: one-shot opacity entrance combined with the continuous
+ * float. Splitting entrance (opacity only) from float (transform only)
+ * lets both run from a single `animation` list without clobbering each
+ * other's transform. */
+@keyframes floater-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.animate-floater {
+  opacity: 0;
+  animation:
+    floater-in 0.7s ease-out forwards,
+    float-y 6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-floater {
+    opacity: 1;
+    animation: none;
+  }
+}
+
 /* Pulse line for diagrams */
 @keyframes pulse-line {
   0% { stroke-dashoffset: 100; opacity: 0.2; }
@@ -242,6 +263,96 @@ body {
 }
 @media (prefers-reduced-motion: reduce) {
   .page-transition {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * CSS-only animation utilities
+ * These replace framer-motion on the homepage + shared layout so those
+ * surfaces ship zero animation JS. `backwards` keeps the start state
+ * applied during any delay so SSR HTML never flashes the end state.
+ * ------------------------------------------------------------------ */
+
+/* Scroll reveal (Reveal / StaggerItem). The element starts hidden via
+ * `.reveal` and transitions to visible when `.is-visible` is toggled by
+ * an IntersectionObserver. Using a transition (not a keyframe) means a
+ * single class flip drives the whole effect. */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.6s cubic-bezier(0.21, 0.47, 0.32, 0.98),
+    transform 0.6s cubic-bezier(0.21, 0.47, 0.32, 0.98);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* One-shot entrance used by hero floaters and the workflow preview nodes. */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+.animate-fade-up {
+  animation: fade-up 0.5s cubic-bezier(0.21, 0.47, 0.32, 0.98) backwards;
+}
+
+/* Dropdown / popover entrance (navbar menus). */
+@keyframes pop-down {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: none; }
+}
+.animate-pop-down {
+  animation: pop-down 0.14s ease-out;
+}
+
+/* Command-palette overlay + dialog entrances. */
+@keyframes overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.animate-overlay-in {
+  animation: overlay-in 0.15s ease-out;
+}
+@keyframes dialog-in {
+  from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+.animate-dialog-in {
+  animation: dialog-in 0.18s ease-out;
+}
+
+/* Pulse dots that travel along the workflow-preview edges. Each edge sets
+ * its own `offset-path` and `animation-delay` inline; this drives motion
+ * along that path with the CSS Motion Path API — no JS required. */
+@keyframes edge-pulse {
+  from { offset-distance: 0%; }
+  to   { offset-distance: 100%; }
+}
+.animate-edge-pulse {
+  offset-distance: 0%;
+  animation: edge-pulse 3.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .animate-fade-up,
+  .animate-pop-down,
+  .animate-overlay-in,
+  .animate-dialog-in,
+  .animate-edge-pulse,
+  .animate-float,
+  .animate-grid,
+  .animate-pulse-line,
+  .animate-ping {
     animation: none;
   }
 }

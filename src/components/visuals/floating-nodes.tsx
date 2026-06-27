@@ -1,6 +1,3 @@
-"use client";
-
-import { motion } from "framer-motion";
 import { Bot, Database, MessageSquare, Sparkles, Zap } from "lucide-react";
 
 const FLOATERS = [
@@ -43,17 +40,14 @@ export function FloatingNodes() {
       className="pointer-events-none absolute inset-0 overflow-hidden"
     >
       {FLOATERS.map((f) => (
-        <motion.span
+        <span
           key={f.label}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: f.delay, ease: "easeOut" }}
-          className={`absolute inline-flex items-center gap-1.5 rounded-full border border-border bg-background/80 px-2.5 py-1 text-[11px] text-muted-foreground backdrop-blur-sm shadow-sm animate-float ${f.className}`}
-          style={{ animationDelay: `${f.delay}s` }}
+          className={`animate-floater absolute inline-flex items-center gap-1.5 rounded-full border border-border bg-background/80 px-2.5 py-1 text-[11px] text-muted-foreground backdrop-blur-sm shadow-sm ${f.className}`}
+          style={{ animationDelay: `${f.delay}s, ${f.delay}s` }}
         >
           <span className="text-foreground">{f.icon}</span>
           <span className="font-mono">{f.label}</span>
-        </motion.span>
+        </span>
       ))}
     </div>
   );

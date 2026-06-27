@@ -1,7 +1,4 @@
-"use client";
-
 import * as React from "react";
-import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 type CardProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -15,26 +12,12 @@ export function Card({
   children,
   ...props
 }: CardProps) {
-  if (hover) {
-    return (
-      <motion.div
-        whileHover={{ y: -3 }}
-        transition={{ type: "spring", stiffness: 300, damping: 24 }}
-        className={cn(
-          "relative rounded-2xl border border-border bg-card p-6 transition-colors",
-          "hover:border-border-strong",
-          className,
-        )}
-        {...(props as React.ComponentProps<typeof motion.div>)}
-      >
-        {children}
-      </motion.div>
-    );
-  }
   return (
     <div
       className={cn(
         "relative rounded-2xl border border-border bg-card p-6",
+        hover &&
+          "transition-[transform,border-color] duration-200 ease-out will-change-transform hover:-translate-y-[3px] hover:border-border-strong motion-reduce:transition-none motion-reduce:hover:translate-y-0",
         className,
       )}
       {...props}

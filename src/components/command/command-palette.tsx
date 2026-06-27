@@ -1,7 +1,6 @@
 "use client";
 
 import { Command } from "cmdk";
-import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import {
   createContext,
@@ -77,27 +76,14 @@ export function CommandPaletteProvider({
   return (
     <CommandPaletteContext.Provider value={ctx}>
       {children}
-      <AnimatePresence>
-        {isOpen ? (
-          <motion.div
-            className="fixed inset-0 z-50 flex items-start justify-center px-4 pt-[10vh]"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
-          >
+      {isOpen ? (
+          <div className="animate-overlay-in fixed inset-0 z-50 flex items-start justify-center px-4 pt-[10vh]">
             <div
               className="absolute inset-0 bg-foreground/30 backdrop-blur-sm"
               onClick={close}
               aria-hidden
             />
-            <motion.div
-              initial={{ opacity: 0, y: -8, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -8, scale: 0.98 }}
-              transition={{ duration: 0.18, ease: "easeOut" }}
-              className="relative w-full max-w-xl rounded-2xl border border-border bg-card shadow-2xl overflow-hidden"
-            >
+            <div className="animate-dialog-in relative w-full max-w-xl rounded-2xl border border-border bg-card shadow-2xl overflow-hidden">
               <Command label="Hypero Command Palette" className="w-full">
                 <div className="flex items-center gap-3 border-b border-border px-4">
                   <Search className="h-4 w-4 text-muted-foreground" />
@@ -232,10 +218,9 @@ export function CommandPaletteProvider({
                   </span>
                 </div>
               </Command>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         ) : null}
-      </AnimatePresence>
     </CommandPaletteContext.Provider>
   );
 }

@@ -1,12 +1,53 @@
 "use client";
 
-import { motion, type Variants } from "framer-motion";
 import * as React from "react";
+import { cn } from "@/lib/utils";
 
-const defaultVariants: Variants = {
-  hidden: { opacity: 0, y: 16 },
-  visible: { opacity: 1, y: 0 },
-};
+/**
+ * Lightweight scroll-reveal primitives backed by a single
+ * IntersectionObserver per element and CSS transitions (see `.reveal` in
+ * globals.css). This replaces the previous framer-motion implementation so
+ * marketing pages ship no animation runtime — the effect is identical but
+ * costs a few hundred bytes instead of ~40KB.
+ */
+function useInView<T extends Element>(
+  amount: number,
+  once: boolean,
+): [React.RefObject<T | null>, boolean] {
+  const ref = React.useRef<T | null>(null);
+  const [inView, setInView] = React.useState(false);
+
+  React.useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+
+    // Respect environments without IntersectionObserver: reveal immediately
+    // as a safe fallback so content is never stuck hidden.
+    if (typeof IntersectionObserver === "undefined") {
+      setInView(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setInView(true);
+            if (once) observer.disconnect();
+          } else if (!once) {
+            setInView(false);
+          }
+        }
+      },
+      { threshold: Math.min(Math.max(amount, 0), 1) },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [amount, once]);
+
+  return [ref, inView];
+}
 
 export function Reveal({
   children,
@@ -23,20 +64,19 @@ export function Reveal({
   amount?: number;
   once?: boolean;
 }) {
-  const Component = motion[as] as typeof motion.div;
-  return (
-    <Component
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once, amount }}
-      variants={defaultVariants}
-      transition={{ duration: 0.6, delay, ease: [0.21, 0.47, 0.32, 0.98] }}
-      className={className}
-    >
-      {children}
-    </Component>
+  const [ref, inView] = useInView<HTMLElement>(amount, once);
+  return React.createElement(
+    as,
+    {
+      ref,
+      className: cn("reveal", inView && "is-visible", className),
+      style: { "--reveal-delay": `${delay * 1000}ms` } as React.CSSProperties,
+    },
+    children,
   );
 }
+
+const StaggerContext = React.createContext(false);
 
 export function StaggerGroup({
   children,
@@ -51,44 +91,46 @@ export function StaggerGroup({
   staggerChildren?: number;
   amount?: number;
 }) {
+  const [ref, inView] = useInView<HTMLDivElement>(amount, true);
+
+  let index = 0;
+  const items = React.Children.map(children, (child) => {
+    if (!React.isValidElement(child)) return child;
+    const i = index++;
+    const element = child as React.ReactElement<{ style?: React.CSSProperties }>;
+    return React.cloneElement(element, {
+      style: {
+        ...element.props.style,
+        "--reveal-delay": `${delay * 1000 + i * staggerChildren * 1000}ms`,
+      } as React.CSSProperties,
+    });
+  });
+
   return (
-    <motion.div
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount }}
-      variants={{
-        hidden: {},
-        visible: {
-          transition: { staggerChildren, delayChildren: delay },
-        },
-      }}
-      className={className}
-    >
-      {children}
-    </motion.div>
+    <StaggerContext.Provider value={inView}>
+      <div ref={ref} className={className}>
+        {items}
+      </div>
+    </StaggerContext.Provider>
   );
 }
 
 export function StaggerItem({
   children,
   className,
+  style,
 }: {
   children: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
 }) {
+  const inView = React.useContext(StaggerContext);
   return (
-    <motion.div
-      variants={{
-        hidden: { opacity: 0, y: 18 },
-        visible: {
-          opacity: 1,
-          y: 0,
-          transition: { duration: 0.55, ease: [0.21, 0.47, 0.32, 0.98] },
-        },
-      }}
-      className={className}
+    <div
+      className={cn("reveal", inView && "is-visible", className)}
+      style={style}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }
