@@ -132,9 +132,23 @@ export function Canvas({
     startVy: number;
     moved: boolean;
   } | null>(null);
-  // Carries the "did this gesture pan?" flag from mouseup to the trailing
+  // Carries the "did this gesture pan?" flag from pointerup to the trailing
   // click, since panRef is already cleared by the time click fires.
   const panMovedRef = React.useRef(false);
+  // Live set of pointers currently pressed on the empty canvas (by pointerId).
+  // One pointer pans; two pointers pinch-zoom. Using Pointer Events for the
+  // canvas gestures (instead of separate mouse + touch listeners) gives one
+  // code path that behaves identically for mouse, touch and pen — the native
+  // touch-listener approach left one-finger panning dead on some real phones.
+  const pointersRef = React.useRef(new Map<number, { x: number; y: number }>());
+  const pinchRef = React.useRef<{
+    distance: number;
+    cx: number;
+    cy: number;
+    vx: number;
+    vy: number;
+    vScale: number;
+  } | null>(null);
 
   const screenToWorld = React.useCallback(
     (clientX: number, clientY: number) => {
@@ -187,184 +201,112 @@ export function Canvas({
     return () => node.removeEventListener("wheel", onWheel);
   }, []);
 
-  // ----- Touch (Android / iOS) -------------------------------------------
-  // One-finger drag on empty canvas pans the world. Two fingers pinch-zoom
-  // around the gesture's centroid. Touches that originate on a node/edge
-  // bubble up untouched so node drag/connect still work.
-  React.useEffect(() => {
-    const node = containerRef.current;
-    if (!node) return;
-
-    let panStart:
-      | { clientX: number; clientY: number; vx: number; vy: number; moved: boolean }
-      | null = null;
-    let pinchStart:
-      | { distance: number; cx: number; cy: number; vx: number; vy: number; vScale: number }
-      | null = null;
-
-    function distance(a: Touch, b: Touch) {
-      return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
-    }
-    function midpoint(a: Touch, b: Touch, rect: DOMRect) {
-      return {
-        cx: (a.clientX + b.clientX) / 2 - rect.left,
-        cy: (a.clientY + b.clientY) / 2 - rect.top,
-      };
-    }
-
-    const onTouchStart = (e: TouchEvent) => {
-      const rect = node.getBoundingClientRect();
-      const v = viewportRef.current;
-
-      // Two fingers ALWAYS means pinch-zoom the canvas — never a node gesture —
-      // so we handle it before any target check. (Requiring an empty-canvas
-      // target here used to block zooming whenever a finger landed on a node.)
-      if (e.touches.length >= 2) {
-        e.preventDefault();
-        panStart = null;
-        const a = e.touches[0]!;
-        const b = e.touches[1]!;
-        const { cx, cy } = midpoint(a, b, rect);
-        pinchStart = {
-          distance: distance(a, b),
-          cx,
-          cy,
-          vx: v.x,
-          vy: v.y,
-          vScale: v.scale,
-        };
-        return;
-      }
-
-      // One finger: pan, unless the touch started on a node or interactive
-      // control (connect handle, delete button, …) which drive their own
-      // gestures. We intentionally do NOT require `e.target === node`: real
-      // browsers may report the target as a non-interactive descendant (the
-      // SVG edge layer, the world layer), and demanding an exact container
-      // match silently killed panning on some phones.
-      const target = e.target as HTMLElement | null;
-      if (target?.closest("[data-node-id]") || target?.closest("button")) {
-        return;
-      }
-      const t = e.touches[0]!;
-      panStart = {
-        clientX: t.clientX,
-        clientY: t.clientY,
-        vx: v.x,
-        vy: v.y,
+  // ----- Pointer-based canvas gestures (mouse / touch / pen) -------------
+  // Node dragging and edge connecting are driven by Pointer Events on the
+  // nodes themselves (they stopPropagation, so the handlers below never fire
+  // for a node press). Here we handle panning the empty canvas (one pointer)
+  // and pinch-zoom (two pointers) with the same unified Pointer Events.
+  const onCanvasPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    // Only the empty canvas pans/zooms. A press on a node/button is handled by
+    // that element and stops propagation before reaching here; the guard is a
+    // belt-and-braces check.
+    if (e.target !== e.currentTarget) return;
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+    pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    const v = viewportRef.current;
+    if (pointersRef.current.size === 1) {
+      pinchRef.current = null;
+      panRef.current = {
+        startClientX: e.clientX,
+        startClientY: e.clientY,
+        startVx: v.x,
+        startVy: v.y,
         moved: false,
       };
-      // Claim the gesture immediately. The two-finger path already does this
-      // and works reliably; a single-finger touch that is NOT preventDefaulted
-      // on touchstart can be swallowed by the browser's own gesture handling
-      // before our first qualifying touchmove arrives — which left one-finger
-      // panning dead on real phones even though pinch-zoom worked.
-      e.preventDefault();
-    };
-
-    const onTouchMove = (e: TouchEvent) => {
-      const rect = node.getBoundingClientRect();
-      if (e.touches.length === 2 && pinchStart) {
-        e.preventDefault();
-        const a = e.touches[0]!;
-        const b = e.touches[1]!;
-        const dist = distance(a, b);
-        const factor = dist / pinchStart.distance;
-        const nextScale = clamp(
-          pinchStart.vScale * factor,
-          MIN_SCALE,
-          MAX_SCALE,
-        );
-        // World-point under the gesture centroid stays put.
-        const wx = (pinchStart.cx - pinchStart.vx) / pinchStart.vScale;
-        const wy = (pinchStart.cy - pinchStart.vy) / pinchStart.vScale;
-        setViewport({
-          x: pinchStart.cx - wx * nextScale,
-          y: pinchStart.cy - wy * nextScale,
-          scale: nextScale,
-        });
-        return;
-      }
-      if (e.touches.length === 1 && panStart) {
-        // Keep owning the gesture for every move so the browser can't reclaim
-        // it mid-drag. The threshold below only decides when the pan visually
-        // starts (so a stationary tap can still fall through to deselect).
-        e.preventDefault();
-        const t = e.touches[0]!;
-        const dx = t.clientX - panStart.clientX;
-        const dy = t.clientY - panStart.clientY;
-        if (!panStart.moved && Math.hypot(dx, dy) > PAN_DRAG_THRESHOLD) {
-          panStart.moved = true;
-        }
-        if (panStart.moved) {
-          setViewport((v) => ({
-            ...v,
-            x: panStart!.vx + dx,
-            y: panStart!.vy + dy,
-          }));
-        }
-      }
-    };
-
-    const onTouchEnd = () => {
-      panStart = null;
-      pinchStart = null;
-    };
-
-    node.addEventListener("touchstart", onTouchStart, { passive: false });
-    node.addEventListener("touchmove", onTouchMove, { passive: false });
-    node.addEventListener("touchend", onTouchEnd);
-    node.addEventListener("touchcancel", onTouchEnd);
-    return () => {
-      node.removeEventListener("touchstart", onTouchStart);
-      node.removeEventListener("touchmove", onTouchMove);
-      node.removeEventListener("touchend", onTouchEnd);
-      node.removeEventListener("touchcancel", onTouchEnd);
-    };
-  }, []);
-
-  // ----- Mouse handling --------------------------------------------------
-  const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Only start panning on empty canvas (clicks on nodes/edges/buttons stop
-    // propagation themselves).
-    if (e.target !== e.currentTarget) return;
-    panRef.current = {
-      startClientX: e.clientX,
-      startClientY: e.clientY,
-      startVx: viewport.x,
-      startVy: viewport.y,
-      moved: false,
-    };
-  };
-
-  const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    // The container only handles panning the empty canvas. Node dragging and
-    // edge connecting are driven by Pointer Events on the nodes themselves
-    // (see the NodeView wiring below) so they work with touch and pen too.
-    if (!panRef.current) return;
-    const dx = e.clientX - panRef.current.startClientX;
-    const dy = e.clientY - panRef.current.startClientY;
-    if (!panRef.current.moved && Math.hypot(dx, dy) > PAN_DRAG_THRESHOLD) {
-      panRef.current.moved = true;
-    }
-    if (panRef.current.moved) {
-      setViewport((v) => ({
-        ...v,
-        x: panRef.current!.startVx + dx,
-        y: panRef.current!.startVy + dy,
-      }));
+    } else if (pointersRef.current.size === 2) {
+      panRef.current = null;
+      const rect = e.currentTarget.getBoundingClientRect();
+      const [a, b] = [...pointersRef.current.values()];
+      pinchRef.current = {
+        distance: Math.hypot(a.x - b.x, a.y - b.y) || 1,
+        cx: (a.x + b.x) / 2 - rect.left,
+        cy: (a.y + b.y) / 2 - rect.top,
+        vx: v.x,
+        vy: v.y,
+        vScale: v.scale,
+      };
     }
   };
 
-  const onMouseUp = () => {
-    // Remember whether this gesture actually moved so the trailing click
-    // (which fires after mouseup, once panRef is cleared) can tell a pan
-    // apart from a plain click-to-deselect.
-    panMovedRef.current = panRef.current?.moved ?? false;
-    panRef.current = null;
+  const onCanvasPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!pointersRef.current.has(e.pointerId)) return;
+    pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    if (pointersRef.current.size >= 2 && pinchRef.current) {
+      const [a, b] = [...pointersRef.current.values()];
+      const dist = Math.hypot(a.x - b.x, a.y - b.y) || 1;
+      const factor = dist / pinchRef.current.distance;
+      const nextScale = clamp(
+        pinchRef.current.vScale * factor,
+        MIN_SCALE,
+        MAX_SCALE,
+      );
+      // Keep the world point under the gesture centroid stationary on screen.
+      const wx = (pinchRef.current.cx - pinchRef.current.vx) / pinchRef.current.vScale;
+      const wy = (pinchRef.current.cy - pinchRef.current.vy) / pinchRef.current.vScale;
+      setViewport({
+        x: pinchRef.current.cx - wx * nextScale,
+        y: pinchRef.current.cy - wy * nextScale,
+        scale: nextScale,
+      });
+      return;
+    }
+
+    if (pointersRef.current.size === 1 && panRef.current) {
+      const dx = e.clientX - panRef.current.startClientX;
+      const dy = e.clientY - panRef.current.startClientY;
+      if (!panRef.current.moved && Math.hypot(dx, dy) > PAN_DRAG_THRESHOLD) {
+        panRef.current.moved = true;
+      }
+      if (panRef.current.moved) {
+        setViewport((vp) => ({
+          ...vp,
+          x: panRef.current!.startVx + dx,
+          y: panRef.current!.startVy + dy,
+        }));
+      }
+    }
   };
 
-  // Treat a non-moved mousedown→mouseup on empty canvas as deselect.
+  const onCanvasPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!pointersRef.current.has(e.pointerId)) return;
+    pointersRef.current.delete(e.pointerId);
+    e.currentTarget.releasePointerCapture?.(e.pointerId);
+    const remaining = pointersRef.current.size;
+    if (remaining < 2) pinchRef.current = null;
+    if (remaining === 0) {
+      // Remember whether this gesture moved so the trailing click can tell a
+      // pan apart from a tap-to-deselect.
+      panMovedRef.current = panRef.current?.moved ?? false;
+      panRef.current = null;
+    } else if (remaining === 1) {
+      // Lifted from a two-finger pinch back to one finger: resume panning from
+      // the finger that's still down so the view doesn't jump.
+      const [[, pos]] = [...pointersRef.current.entries()];
+      const v = viewportRef.current;
+      panRef.current = {
+        startClientX: pos.x,
+        startClientY: pos.y,
+        startVx: v.x,
+        startVy: v.y,
+        moved: true,
+      };
+    }
+  };
+
+  // ----- Tap-to-deselect -------------------------------------------------
+  // Treat a non-moved press→release on empty canvas as "deselect". The pan
+  // flag is set by onCanvasPointerUp just before the synthetic click fires.
   const onClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target !== e.currentTarget) return;
     if (panMovedRef.current) {
@@ -477,10 +419,10 @@ export function Canvas({
   return (
     <div
       ref={containerRef}
-      onMouseDown={onMouseDown}
-      onMouseMove={onMouseMove}
-      onMouseUp={onMouseUp}
-      onMouseLeave={onMouseUp}
+      onPointerDown={onCanvasPointerDown}
+      onPointerMove={onCanvasPointerMove}
+      onPointerUp={onCanvasPointerUp}
+      onPointerCancel={onCanvasPointerUp}
       onClick={onClick}
       onDrop={onDrop}
       onDragOver={onDragOver}
