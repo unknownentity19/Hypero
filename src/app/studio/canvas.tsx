@@ -475,13 +475,19 @@ export function Canvas({
           transform: `translate3d(${viewport.x}px, ${viewport.y}px, 0) scale(${viewport.scale})`,
         }}
       >
-        {/* Edges. The SVG is sized to a comfortably large fixed footprint
-            and uses overflow:visible so paths render past its bounds when
-            the user scrolls into far-away regions of the world. */}
+        {/* Edges. A 1x1 SVG with overflow:visible renders every path at its
+            absolute world coordinates without clipping. We deliberately avoid
+            a large fixed width/height here: the world layer is GPU-composited
+            (translate3d), so a huge SVG forces the browser to allocate a
+            backing store sized to that SVG. On memory-constrained mobile
+            browsers — especially iOS Safari in "Desktop" mode, where the
+            layout viewport balloons to ~980px at high pixel density — that
+            backing store can exceed the per-tab budget and crash the page
+            ("this page couldn't load"). Keeping the footprint tiny fixes it. */}
         <svg
           className="pointer-events-none absolute left-0 top-0"
-          width={20000}
-          height={20000}
+          width={1}
+          height={1}
           style={{ overflow: "visible" }}
         >
           <defs>
